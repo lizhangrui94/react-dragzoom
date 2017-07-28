@@ -1,0 +1,8 @@
+/node_modules/
+.svn
+node_modules.zip
+/.idea/
+.vscode
+dist
+*.log
+.DS_Store

@@ -1,0 +1,4 @@
+// @flow
+declare export default string
+
+//图片资源

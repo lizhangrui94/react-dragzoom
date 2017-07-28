@@ -1,0 +1,19 @@
+[ignore]
+.*/node_modules/*
+
+[include]
+
+[libs]
+./flow/environment.js
+
+[options]
+esproposal.decorators=ignore
+module.name_mapper='^components\/\(.*\)$' -> '<PROJECT_ROOT>/src/components/\1'
+module.name_mapper='^pages\/\(.*\)$' -> '<PROJECT_ROOT>/src/pages/\1'
+module.name_mapper='^modules\/\(.*\)$' -> '<PROJECT_ROOT>/src/redux/modules/\1'
+module.name_mapper='^images\/\(.*\)$' -> '<PROJECT_ROOT>/src/assets/images/\1'
+module.name_mapper='^utils\/\(.*\)$' -> '<PROJECT_ROOT>/src/utils/\1'
+module.name_mapper='\(intro.js\)' -> '<PROJECT_ROOT>/flow/generalModule.js.flow'
+module.name_mapper.extension='css' -> '<PROJECT_ROOT>/flow/CSSFlowStub.js.flow'
+module.name_mapper.extension='less' -> '<PROJECT_ROOT>/flow/CSSFlowStub.js.flow'
+module.name_mapper.extension='.*\.\(svg\|png\|jpg\|gif\)$' -> '<PROJECT_ROOT>/flow/WebpackAsset.js.flow'

@@ -1,0 +1,13 @@
+{
+  "presets": [
+    ['es2015', {
+      modules: 'commonjs'
+    }], 'react', 'stage-2','flow'
+  ],
+  "plugins": ['transform-runtime',"transform-decorators-legacy",["import",{"libraryName": "antd","style": true},"transform-flow-strip-types"],
+  ],
+  "compact": false
+}
+
+//"transform-flow-strip-types":  去除flow标记
+//注意：在 babel6 的 babel-preset-react 的插件中已经内置了 transform-flow-strip-types（https://flowtype.org/docs/syntax.html)如果使用了 babel-preset-react那么无需再引入transform-flow-strip-types
