@@ -1,14 +1,15 @@
 {
-  "name": "dragScale",
+  "name": "react-dragzoom",
   "version": "1.0.0",
   "description": "a drag and scale component for react",
   "main": "index.js",
   "author": "lizhangrui",
   "license": "MIT",
   "scripts":{
-    "start": "",
+    "start": "webpack-dev-server --env.dev --inline --progress --colors",
     "test": "",
-    "build": "",
+    "build-dev": "webpack --env.dev --progress --profile --colors",
+    "build-prod": "webpack --env.prod --progress --profile --colors",
     "lint": "eslint \"src/**/*.@(js|jsx)\" -f node_modules/eslint-html-reporter/reporter.js -o eslint_report.html"
   },
   "dependencies": {

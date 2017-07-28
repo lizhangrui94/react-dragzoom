@@ -26,6 +26,19 @@ module.exports = {
         "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
         "linebreak-style": ["error", "windows"],
         // "linebreak-style": ["error", "unix"],
-        "max-len": ["error", 120, 4]
+        // "max-len": ["error", 120, 4]
+        "no-mixed-operators": [
+            "error",
+            {
+                "groups": [
+                    ["+", "-", "*", "/", "%", "**"],
+                    ["&", "|", "^", "~", "<<", ">>", ">>>"],
+                    ["==", "!=", "===", "!==", ">", ">=", "<", "<="],
+                    ["&&", "||"],
+                    ["in", "instanceof"]
+                ],
+                "allowSamePrecedence": true
+            }
+        ]
     }
 };

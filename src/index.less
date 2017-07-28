@@ -1,5 +1,3 @@
-@import '~styles/mixins/index.less';
-@import '~styles/themes/default.less';
 .dragScale { overflow: hidden; .square(100%);
   .drag-mask{ .square(100%); position: absolute; background-color: rgba(55, 55, 55, .6);}
   .drag-wrap{z-index: 1;
@@ -20,4 +18,15 @@
     100% { transform: scale(1.2, 1.2); opacity: 0; }
   }
 }
-  .dragPoint{ .dragPoint(); transform: none !important;}
+
+.dragPoint{ .dragPoint(); transform: none !important;}
+
+
+.size(@width; @height) {
+  width: @width;
+  height: @height;
+}
+
+.square(@size) {
+  .size(@size; @size);
+}

@@ -1,10 +1,7 @@
 const webpack = require('webpack');
 const path = require('path');
 
-module.exports = function () {
-  if (process.env === 'production') {
-
-  }
+module.exports = function (env) {
   return {
     context: path.join(__dirname, '/'),
     entry: './index.js',

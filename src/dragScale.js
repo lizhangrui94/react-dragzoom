@@ -5,10 +5,8 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import Draggable from 'react-draggable';
-import { addEvent, removeEvent } from 'utils/domFun';
-import { getinlinePosition } from './utils';
+import { getinlinePosition, addEvent, removeEvent } from './utils';
 import type { Position, Size, typeSize } from './dragContainer';
-// import { getControlPosition, getBoundPosition, createDraggableData, createCoreData } from './utils'
 
 
 type Props = {
@@ -391,7 +389,7 @@ export default class dragScale extends Component {
 
   render() {
     const { currentSize, dragProps, scaleNum, showScaleNum, canDraggable } = this.state;
-    const { actualImageSize, dragPoints } = this.props;
+    const { dragPoints } = this.props;
     const { height, width } = currentSize;
     const newStyle = {
       width: `${width}px`,
@@ -402,7 +400,7 @@ export default class dragScale extends Component {
     return (
       <div className="dragScale" id="dragScale" ref={rn => this.dragContainer = rn} style={{ position: 'relative', ...this.props.style }}>
         {/* <div className='drag-mask'></div> */}
-        <div className="drag-wrap" ref={rn => this.drag = rn} style={{ height: '100%', width: '100%', position: 'relative' }}>
+        <div className="drag-wrap" ref={ rn => this.drag = rn} style={{ height: '100%', width: '100%', position: 'relative' }}>
           <Draggable {...dragProps}>
             {
               React.cloneElement(React.Children.only(this.props.children), {

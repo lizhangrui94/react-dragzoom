@@ -5,4 +5,7 @@
 import dragScale from './dragContainer'
 import './index.less'
 
-export default dragScale
+module.exports = dragScale
+
+// module.exports = require('./dragContainer').default;
+// module.exports.DraggableCore = require('./lib/DraggableCore').default;
