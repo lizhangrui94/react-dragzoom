@@ -8,24 +8,27 @@ module.exports = function (env) {
     output: {
       path: path.join(__dirname, 'dist'),
       filename: './react-dragScale.js',
+      library: 'ReactDragZoom',
+      libraryTarget: 'umd',
+      umdNamedDefine: true,
     },
     devtool: 'source-map',
     devServer: {
       historyApiFallback: true,
       hot: false,
       compress: true,
-      filename: "react-dragScale.js",
+      filename: 'react-dragScale.js',
       contentBase: path.join(__dirname, '/'),
       publicPath: '/',
       port: 3000,
-      host: "0.0.0.0",
+      host: '0.0.0.0',
       disableHostCheck: true,
     },
     module: {
       rules: [{
         test: /\.jsx?$/,
         exclude: /node_modules/,
-        use: ['react-hot-loader','babel-loader?cacheDirectory=true'],
+        use: ['react-hot-loader', 'babel-loader?cacheDirectory=true'],
       }, {
         test: /\.less$/,
         use: ['style-loader', 'css-loader', 'less-loader'],

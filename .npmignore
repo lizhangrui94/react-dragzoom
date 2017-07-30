@@ -4,6 +4,8 @@ node_modules.zip
 /.idea/
 .vscode
 dist
-/lib/
 *.log
 .DS_Store
+.gitignore
+.babelrc
+webpack.config*
