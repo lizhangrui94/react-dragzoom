@@ -9,3 +9,6 @@ dist
 .gitignore
 .babelrc
 webpack.config*
+*flow*
+index.html
+.eslint*

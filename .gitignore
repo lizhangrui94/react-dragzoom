@@ -4,6 +4,7 @@ node_modules.zip
 /.idea/
 .vscode
 dist
+/es/
 /lib/
 *.log
 .DS_Store

@@ -196,6 +196,7 @@ export default class dragContainer extends Component<any, Props, State> {
         controlledPositions[item] = { ...newPosition, id, offset };
       });
     }
+    size.lastSize = {width,height}
     size.current = { width, height };
     this.parentPosition = position;
     this.setState({ controlledPositions, size });
