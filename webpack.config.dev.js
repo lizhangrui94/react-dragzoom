@@ -4,7 +4,7 @@ const path = require('path');
 module.exports = function (env) {
   return {
     context: path.join(__dirname, '/'),
-    entry: './src/index.js',
+    entry: './index.js',
     output: {
       path: path.join(__dirname, 'lib'),
       filename: './react-dragScale.js',
