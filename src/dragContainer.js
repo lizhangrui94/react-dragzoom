@@ -90,16 +90,17 @@ export default class dragContainer extends Component<any, Props, State> {
     if (nextPoints && nextPoints.length > 0) {
       newNextPoints = nextPoints.map(item => ({ x: item.x, y: item.y, id: item.id }));
     }
+    if (img !== nextProps.img) {
+      size.actual = { width: 0, height: 0 };
+      this.setState({ size });
+      return
+    }
     if (!isArrayEqual(newPoints, newNextPoints) && size.current.width > 0) {
       nextPoints.map((item) => {
         controlledPositions[item.id] = this.calculatePosition(item);
       });
       this.setState({ controlledPositions });
       this.isComplete = true;
-    }
-    if (img !== nextProps.img) {
-      size.actual = { width: 0, height: 0 };
-      this.setState({ size });
     }
   }
 
