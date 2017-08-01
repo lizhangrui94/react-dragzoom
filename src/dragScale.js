@@ -205,7 +205,7 @@ export default class dragScale extends Component {
     // 鼠标在x,y轴中占得比例
     let { mouseX, mouseY } = this.lastScale; // 鼠标移动后在图片中的位置
     const { mouseX: lastX, mouseY: lastY } = this.refreshScale;  // 缩放后在图片中的位置
-    if (mouseX !== lastX || mouseY !== lastY) { // 鼠标位置已经移动
+    if (mouseX === lastX && mouseY === lastY) { // 鼠标位置已经移动
       const { left, top } = getinlinePosition(this.drag);
       const { x, y } = dragProps.position;  // 图片相对于容器的位置
       mouseX = mouseX - left - x;

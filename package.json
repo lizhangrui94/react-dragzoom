@@ -1,6 +1,6 @@
 {
   "name": "react-dragzoom",
-  "version": "0.1.2",
+  "version": "0.1.3-beta",
   "description": "a drag and scale component for react",
   "main": "index.js",
   "author": "lizhangrui",

@@ -78,9 +78,6 @@ export default class dragContainer extends Component<any, Props, State> {
    * props 只需要判断 {x,y,id}这三种属性，最好变成对象进行比较，需要优化
    */
   componentWillReceiveProps(nextProps: Props) {
-    // console.log(this.props.points)
-    // console.log(nextProps.points)
-    // console.log(nextProps.points === this.props.points)
     const { points, img } = this.props;
     const nextPoints = nextProps.points;
     const { controlledPositions, size } = this.state;
