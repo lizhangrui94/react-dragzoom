@@ -6,6 +6,6 @@ import ReactDOM from 'react-dom';
 import Dragzoom from './src';
 
 ReactDOM.render(
-  <Dragzoom img="https://thumbs.dreamstime.com/z/asia-gril-smile-red-lip-38054536.jpg"/>,
-    document.getElementById('root')
+  <Dragzoom img="http://seopic.699pic.com/photo/00044/9957.jpg_wh1200.jpg" />,
+    document.getElementById('root'),
 );
