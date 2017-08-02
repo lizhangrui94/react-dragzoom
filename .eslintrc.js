@@ -27,6 +27,7 @@ module.exports = {
         "linebreak-style": ["error", "windows"],
         // "linebreak-style": ["error", "unix"],
         // "max-len": ["error", 120, 4]
+        "max-len": ["error", 160],
         "no-mixed-operators": [
             "error",
             {

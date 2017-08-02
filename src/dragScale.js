@@ -85,7 +85,6 @@ export default class dragScale extends Component {
 
   componentWillReceiveProps(nextProps: Props) {
     const { position, actualImageSize, initCalculatePoints } = this.props;
-    const { initSize, currentSize } = this.state;
     const { position: nextPosition, actualImageSize: nextActualImageSize } = nextProps;
     if (position && nextPosition && (position.x !== nextPosition.x ||
       position.y !== nextPosition.y)
@@ -118,8 +117,8 @@ export default class dragScale extends Component {
    * @return initSize newSize position --在父元素中的初始位置, 其中initSize = newSize
    */
   initElementPosition = (actualSize?: Size): {initSize: Size, newSize: Size, position: Position} => {
-    const { actualImageSize, setSize, onSizeChange, changePosition } = this.props;
-    let { initSize, currentSize, dragProps } = this.state;
+    const { actualImageSize, setSize } = this.props;
+    let { initSize, dragProps } = this.state;
 
     const node = ReactDOM.findDOMNode(this.drag);
     if (!node || !(node instanceof HTMLElement)) {
@@ -193,10 +192,7 @@ export default class dragScale extends Component {
     if (actualImageSize.width <= 0) {
       return;
     }
-    const { deltaY } = e;
-    const target = this.drag;
-    let scaling = 1;
-    scaling = deltaY < 0 ? 1.25 : 0.8;
+    const scaling = e.deltaY < 0 ? 1.25 : 0.8;
 
     // 当前元素大小
     const lastSize = { ...currentSize };
@@ -308,7 +304,7 @@ export default class dragScale extends Component {
   onContaninerResize = () => {
     const { initSize, newSize, position } = this.initElementPosition();
     // this.props.changePosition(position)
-    this.props.onSizeChange(initSize, initSize, position);
+    this.props.onSizeChange(initSize, newSize, position);
   }
 
   // 开始图片的拖拽

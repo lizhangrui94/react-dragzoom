@@ -92,7 +92,10 @@ export default class dragContainer extends Component<any, Props, State> {
     }
     if (img !== nextProps.img) {
       size.actual = { width: 0, height: 0 };
-      this.setState({ size });
+      size.current = { width: 0, height: 0 };
+      size.lastSize = null
+      this.setState({ size, controlledPositions:{} });
+      this.isComplete = false
       return
     }
     if (!isArrayEqual(newPoints, newNextPoints) && size.current.width > 0) {

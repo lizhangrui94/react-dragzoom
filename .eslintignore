@@ -4,4 +4,4 @@
 dist/*
 !/.flowconfig
 /.flowconfig
-/src/__test
+/src/__test__

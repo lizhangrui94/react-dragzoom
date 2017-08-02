@@ -1,0 +1,289 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`react-dragzoom ansy load img 1`] = `
+<div
+  style={
+    Object {
+      "height": "100%",
+      "position": "relative",
+      "width": "100%",
+    }
+  }
+>
+  <div
+    className="dragScale"
+    id="dragScale"
+    style={
+      Object {
+        "position": "relative",
+      }
+    }
+  >
+    <div
+      className="drag-wrap"
+      style={
+        Object {
+          "height": "100%",
+          "position": "relative",
+          "width": "100%",
+        }
+      }
+    >
+      <div
+        className="react-draggable"
+        onMouseDown={[Function]}
+        onMouseUp={[Function]}
+        onTouchEnd={[Function]}
+        onTouchStart={[Function]}
+        style={
+          Object {
+            "cursor": "auto",
+            "height": "0px",
+            "touchAction": "none",
+            "transform": "translate(0px,0px)",
+            "width": "0px",
+          }
+        }
+        transform={null}
+      >
+        <img
+          onLoad={[Function]}
+          src=""
+          style={
+            Object {
+              "height": "100%",
+              "width": "100%",
+            }
+          }
+        />
+      </div>
+      <div
+        style={
+          Object {
+            "height": "0px",
+            "left": "0px",
+            "position": "absolute",
+            "top": "0px",
+          }
+        }
+      />
+    </div>
+  </div>
+</div>
+`;
+
+exports[`react-dragzoom normal dragzoom without img 1`] = `
+<div
+  style={
+    Object {
+      "height": "100%",
+      "position": "relative",
+      "width": "100%",
+    }
+  }
+>
+  <div
+    className="dragScale"
+    id="dragScale"
+    style={
+      Object {
+        "position": "relative",
+      }
+    }
+  >
+    <div
+      className="drag-wrap"
+      style={
+        Object {
+          "height": "100%",
+          "position": "relative",
+          "width": "100%",
+        }
+      }
+    >
+      <div
+        className="react-draggable"
+        onMouseDown={[Function]}
+        onMouseUp={[Function]}
+        onTouchEnd={[Function]}
+        onTouchStart={[Function]}
+        style={
+          Object {
+            "cursor": "auto",
+            "height": "0px",
+            "touchAction": "none",
+            "transform": "translate(0px,0px)",
+            "width": "0px",
+          }
+        }
+        transform={null}
+      >
+        <img
+          onLoad={[Function]}
+          src={undefined}
+          style={
+            Object {
+              "height": "100%",
+              "width": "100%",
+            }
+          }
+        />
+      </div>
+      <div
+        style={
+          Object {
+            "height": "0px",
+            "left": "0px",
+            "position": "absolute",
+            "top": "0px",
+          }
+        }
+      />
+    </div>
+  </div>
+</div>
+`;
+
+exports[`react-dragzoom normal has img 1`] = `
+<div
+  style={
+    Object {
+      "height": "100%",
+      "position": "relative",
+      "width": "100%",
+    }
+  }
+>
+  <div
+    className="dragScale"
+    id="dragScale"
+    style={
+      Object {
+        "position": "relative",
+      }
+    }
+  >
+    <div
+      className="drag-wrap"
+      style={
+        Object {
+          "height": "100%",
+          "position": "relative",
+          "width": "100%",
+        }
+      }
+    >
+      <div
+        className="react-draggable"
+        onMouseDown={[Function]}
+        onMouseUp={[Function]}
+        onTouchEnd={[Function]}
+        onTouchStart={[Function]}
+        style={
+          Object {
+            "cursor": "auto",
+            "height": "0px",
+            "touchAction": "none",
+            "transform": "translate(0px,0px)",
+            "width": "0px",
+          }
+        }
+        transform={null}
+      >
+        <img
+          onLoad={[Function]}
+          src="http://img.huafans.cn/data/attachment/forum/201503/26/112349rwxyiovzjzjmiclw.jpg"
+          style={
+            Object {
+              "height": "100%",
+              "width": "100%",
+            }
+          }
+        />
+      </div>
+      <div
+        style={
+          Object {
+            "height": "0px",
+            "left": "0px",
+            "position": "absolute",
+            "top": "0px",
+          }
+        }
+      />
+    </div>
+  </div>
+</div>
+`;
+
+exports[`react-dragzoom points 1`] = `
+<div
+  style={
+    Object {
+      "height": "100%",
+      "position": "relative",
+      "width": "100%",
+    }
+  }
+>
+  <div
+    className="dragScale"
+    id="dragScale"
+    style={
+      Object {
+        "position": "relative",
+      }
+    }
+  >
+    <div
+      className="drag-wrap"
+      style={
+        Object {
+          "height": "100%",
+          "position": "relative",
+          "width": "100%",
+        }
+      }
+    >
+      <div
+        className="react-draggable"
+        onMouseDown={[Function]}
+        onMouseUp={[Function]}
+        onTouchEnd={[Function]}
+        onTouchStart={[Function]}
+        style={
+          Object {
+            "cursor": "auto",
+            "height": "0px",
+            "touchAction": "none",
+            "transform": "translate(0px,0px)",
+            "width": "0px",
+          }
+        }
+        transform={null}
+      >
+        <img
+          onLoad={[Function]}
+          src="http://img.huafans.cn/data/attachment/forum/201503/26/112349rwxyiovzjzjmiclw.jpg"
+          style={
+            Object {
+              "height": "100%",
+              "width": "100%",
+            }
+          }
+        />
+      </div>
+      <div
+        style={
+          Object {
+            "height": "0px",
+            "left": "0px",
+            "position": "absolute",
+            "top": "0px",
+          }
+        }
+      />
+    </div>
+  </div>
+</div>
+`;
