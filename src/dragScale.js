@@ -22,6 +22,7 @@ type Props = {
   setSize: (type: typeSize, Object)=>mixed, // 向父组件传输各类大小位置
   style?: Object,
   children: ReactElement<any>,
+  otherChildren:ReactElement<any>,
   dragPoints: ReactElement<any>,
 };
 
@@ -63,7 +64,7 @@ export default class dragScale extends Component {
 
   componentWillMount() {
     if (this.props.scale) {
-      this.state.dragProps = { ...this.state.dragProps, onDrag: this.handleDrag };
+      this.state.dragProps = { ...this.state.dragProps, onDrag: this.handleDrag, onStop:this.handleDragStop };
     }
   }
 
@@ -320,6 +321,9 @@ export default class dragScale extends Component {
       top = y;
     let position;
 
+    const { changePosition } = this.props;
+    changePosition && changePosition({x,y});
+
     const initWidth = this.containerSize.width;
     const initHeight = this.containerSize.height;
 
@@ -357,11 +361,16 @@ export default class dragScale extends Component {
       // return showUpdate
     }
     position = { x: left, y: top };
-    const { changePosition } = this.props;
-    changePosition && changePosition(position);
-
+    
     dragProps.position = position;
     this.setState({ dragProps });
+  }
+
+  handleDragStop = () =>{
+    const { changePosition } = this.props;
+    const { dragProps } = this.state
+    const { position } = dragProps
+    changePosition && changePosition(position);
   }
 
   // 计算图片的缩放值
@@ -385,7 +394,7 @@ export default class dragScale extends Component {
 
   render() {
     const { currentSize, dragProps, scaleNum, showScaleNum, canDraggable } = this.state;
-    const { dragPoints } = this.props;
+    const { dragPoints, otherChildren } = this.props;
     const { height, width } = currentSize;
     const newStyle = {
       width: `${width}px`,

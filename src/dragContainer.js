@@ -30,6 +30,8 @@ type Props={
   onDragStop?: Function,
   onSingleDragStop?: Function,
   onDrag?: Function,
+  onSizeChange?:Function,
+  children:?ReactElement<any>,
 };
 
 type State={
@@ -151,7 +153,7 @@ export default class dragContainer extends Component<any, Props, State> {
     this.setState({ controlledPositions });
   }
 
-  /**
+  /** 
    * 初始化图片位置跟改变图片位置,父容器大小变化的时候调用
    * @param position 图片的最新位置
    * sclakX,sclaKY 为 图片距离上次移动的距离
@@ -160,7 +162,6 @@ export default class dragContainer extends Component<any, Props, State> {
   changePosition = (position: {x: number, y: number}) => {
     const { parentPosition } = this;
     const { controlledPositions } = this.state;
-    // console.log(parentPosition)
     const positions = Object.keys(controlledPositions);
     const sclakX = position.x - parentPosition.x;
     const sclakY = position.y - parentPosition.y;
@@ -206,6 +207,8 @@ export default class dragContainer extends Component<any, Props, State> {
     size.lastSize = { width, height };
     size.current = { width, height };
     this.parentPosition = position;
+    const { onSizeChange } = this.props
+    onSizeChange && onSizeChange(newSize)
     this.setState({ controlledPositions, size });
   }
 
@@ -346,6 +349,8 @@ export default class dragContainer extends Component<any, Props, State> {
 
   setParentPosition = (position: Position) => {
     this.parentPosition = { ...position };
+    const { onSizeChange } = this.props
+    onSizeChange && onSizeChange(this.state.size.initSize)
   }
 
   /**
@@ -363,7 +368,6 @@ export default class dragContainer extends Component<any, Props, State> {
     const { x: parentX, y: parentY } = parentPosition;
 
     try {
-      // console.log(controlledPositions['1'])
       const newPoints = points.map((items) => {
         const { x, y, offset: { top, left } } = controlledPositions[items.id];
         const bounds = { top: parentY - top, left: parentX - left, right: parentX + width - left, bottom: parentY + height - top };
@@ -389,7 +393,7 @@ export default class dragContainer extends Component<any, Props, State> {
 
   render() {
     const { size } = this.state;
-    const { img, points } = this.props;
+    const { img, points, children } = this.props;
     const dragPoints = (
       <div style={{ position: 'absolute', top: '0px', left: '0px', height: '0px' }} ref={rn => this.dragPoints = rn}>
         {this.getDraggablePoints(points)}
@@ -407,9 +411,11 @@ export default class dragContainer extends Component<any, Props, State> {
           setParentPosition={this.setParentPosition}
           dragPoints={dragPoints}
           actualImageSize={size.actual}
+          otherChildren={children}
         >
           <div>
             <img style={{ width: '100%', height: '100%' }} onLoad={this.imageOnLoad} src={img} />
+            {children}
           </div>
         </DragScale>
 
