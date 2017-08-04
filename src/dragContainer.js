@@ -162,6 +162,7 @@ export default class dragContainer extends Component<any, Props, State> {
   changePosition = (position: {x: number, y: number}) => {
     const { parentPosition } = this;
     const { controlledPositions } = this.state;
+    // console.log(parentPosition)
     const positions = Object.keys(controlledPositions);
     const sclakX = position.x - parentPosition.x;
     const sclakY = position.y - parentPosition.y;
@@ -380,7 +381,7 @@ export default class dragContainer extends Component<any, Props, State> {
             onDrag={isEdit ? (e, position: Position) => this.onControlledDrag(items.id, position) : () => false}
           >
             <div className="dragPoint" style={{ position: 'absolute', top: y, left: x }} data-id={items.id}>
-              {items.content && (items.content.props.children.length > 1 ? items.content.props.children : items.content)}
+              {items.content}
             </div>
           </Draggable>
         );
