@@ -27,6 +27,7 @@ type Props={
   img: string,
   points: Array<any>,
   disabled?: boolean,
+  maxZoom:number, //最大的放大值
   onDragStop?: Function,
   onSingleDragStop?: Function,
   onDrag?: Function,
@@ -394,7 +395,7 @@ export default class dragContainer extends Component<any, Props, State> {
 
   render() {
     const { size } = this.state;
-    const { img, points, children } = this.props;
+    const { img, points, children, maxZoom } = this.props;
     const dragPoints = (
       <div style={{ position: 'absolute', top: '0px', left: '0px', height: '0px' }} ref={rn => this.dragPoints = rn}>
         {this.getDraggablePoints(points)}
@@ -405,6 +406,7 @@ export default class dragContainer extends Component<any, Props, State> {
       <div style={{ position: 'relative', width: '100%', height: '100%' }}>
         <DragScale
           scale
+          maxZoom={maxZoom}
           changePosition={this.changePosition}
           onSizeChange={this.onSizeChange}
           setSize={this.setSize}

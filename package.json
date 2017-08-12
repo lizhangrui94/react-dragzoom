@@ -1,6 +1,6 @@
 {
   "name": "react-dragzoom",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "a drag and scale component for react",
   "main": "index.js",
   "author": "lizhangrui",
@@ -17,13 +17,14 @@
     "lint": "eslint \"src/**/*.@(js|jsx)\" -f node_modules/eslint-html-reporter/reporter.js -o eslint_report.html"
   },
   "dependencies": {
+    
+  },
+  "devDependencies": {
     "lodash": "^4.17.4",
     "react": "15.6.1",
     "react-dom": "15.6.1",
     "react-draggable": "^2.2.6",
-    "react-test-renderer": "^15.6.1"
-  },
-  "devDependencies": {
+    "react-test-renderer": "^15.6.1",
     "babel-cli": "^6.24.1",
     "babel-core": "^6.4.0",
     "babel-eslint": "^7.2.3",

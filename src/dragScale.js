@@ -12,6 +12,7 @@ import type { Position, Size, typeSize } from './dragContainer';
 type Props = {
   scale?: boolean,
   actualImageSize: Size, // 真实图片大小
+  maxZoom:number, // 放大的最大值
   draggable?: boolean,
   offsetParent?: HTMLElement | null,
   position?: Position, // 可以控制图片的位置
@@ -32,12 +33,14 @@ export default class dragScale extends Component {
   lastScale: {mouseX: number, mouseY: number};  // 存储上一次的鼠标位置
   refreshScale: {mouseX: number, mouseY: number};  // 存储上一次的鼠标位置
   totalScale: number; // 总的缩放比例
+  scaleNum: number; // 缩放的比例,默认为1
   containerSize: Size; // 父容器的大小
   containerPosition: {left: number, top: number} = { left: 0, top: 0 }; // 容器在屏幕中的位置
   initPosition: Position; // 在父元素中的初始位置
 
   static defaultProps = {
     offsetParent: null,
+    maxZoom:2,
   }
 
   state: {
@@ -186,7 +189,7 @@ export default class dragScale extends Component {
     if (e instanceof WheelEvent) {
       e.preventDefault();
     }
-    const { actualImageSize, setSize, onSizeChange } = this.props;
+    const { actualImageSize, setSize, onSizeChange, maxZoom } = this.props;
     const { currentSize, initSize, scaleNum } = this.state;
     const { dragProps } = this.state;
 
@@ -225,10 +228,10 @@ export default class dragScale extends Component {
 
     const minScale = initSize.width / actualImageSize.width;
     // 超出最大倍数则取消
-    if ((scaleNum >= 2 && scaling > 1) || (scaleNum <= minScale && scaling < 1)) {
+    if ((scaleNum >= maxZoom && scaling > 1) || (scaleNum <= minScale && scaling < 1)) {
       return;
     }
-    const newScaleNum = this.calculateScale(newSize.width, 2, actualImageSize.width);
+    const newScaleNum = this.calculateScale(newSize.width, maxZoom, actualImageSize.width);
 
     newSize = { width: actualImageSize.width * newScaleNum, height: actualImageSize.height * newScaleNum };
 
@@ -376,8 +379,8 @@ export default class dragScale extends Component {
   // 计算图片的缩放值
   calculateScale = (width: number, max: number, actualWidth: number, min: number = 0, init: number = 0.33) => {
     const value = Number((width / actualWidth).toFixed(2));
-    if (Math.abs(value - max) * 100 < 10) { // 最大值
-      return 2;
+    if (Math.abs(value - max) * 100 < 10 || value > max) { // 最大值
+      return max;
     }
     // if(Math.abs(value-init)*100<2){ // 进页面压缩后的值
     //   return init
