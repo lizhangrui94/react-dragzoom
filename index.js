@@ -1,3 +1,3 @@
-import DragZoom from 'es'
+import DragZoom from './es'
 
 export default DragZoom
