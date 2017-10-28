@@ -5,7 +5,7 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import Draggable from 'react-draggable';
-import { getinlinePosition, addEvent, removeEvent } from './utils';
+import { getinlinePosition, addEvent, removeEvent, throttle } from './utils';
 import type { Position, Size, typeSize } from './dragContainer';
 
 
@@ -23,7 +23,6 @@ type Props = {
   setSize: (type: typeSize, Object)=>mixed, // 向父组件传输各类大小位置
   style?: Object,
   children: ReactElement<any>,
-  otherChildren:ReactElement<any>,
   dragPoints: ReactElement<any>,
 };
 
@@ -37,6 +36,7 @@ export default class dragScale extends Component {
   containerSize: Size; // 父容器的大小
   containerPosition: {left: number, top: number} = { left: 0, top: 0 }; // 容器在屏幕中的位置
   initPosition: Position; // 在父元素中的初始位置
+  throttle:Function;
 
   static defaultProps = {
     offsetParent: null,
@@ -73,9 +73,8 @@ export default class dragScale extends Component {
 
   componentDidMount() {
     const { scale, draggable } = this.props;
-    /* flow-disabled */
+    /* $FlowFixMe */
     document.ondragstart = function () { return false; };
-    /* flow-disabled */
     if (draggable) { // 移动
       // addEvent(this.dragContainer,'mousedown',this.init)
       // 取消移动
@@ -397,7 +396,7 @@ export default class dragScale extends Component {
 
   render() {
     const { currentSize, dragProps, scaleNum, showScaleNum, canDraggable } = this.state;
-    const { dragPoints, otherChildren } = this.props;
+    const { dragPoints } = this.props;
     const { height, width } = currentSize;
     const newStyle = {
       width: `${width}px`,

@@ -4,7 +4,7 @@ const path = require('path');
 module.exports = function (env) {
   return {
     context: path.join(__dirname, '/'),
-    entry: './index.js',
+    entry: './index-test.js',
     output: {
       path: path.join(__dirname, 'lib'),
       filename: './react-dragScale.js',
@@ -20,7 +20,7 @@ module.exports = function (env) {
       filename: 'react-dragScale.js',
       contentBase: path.join(__dirname, '/'),
       publicPath: '/',
-      port: 3000,
+      port: 8002,
       host: '0.0.0.0',
       disableHostCheck: true,
     },

@@ -11,4 +11,5 @@ dist
 webpack.config*
 *flow*
 index.html
+index-test.js
 .eslint*

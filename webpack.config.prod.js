@@ -13,12 +13,12 @@ module.exports = function (env) {
       umdNamedDefine: true,
     },
     devtool: 'source-map',
-    plugins: [
-      new webpack.DefinePlugin({
-        'process.env': {NODE_ENV:  JSON.stringify("production")}
-      }),
-      new webpack.optimize.UglifyJsPlugin(),
-    ],
+    // plugins: [
+    //   new webpack.DefinePlugin({
+    //     'process.env': {NODE_ENV:  JSON.stringify("production")}
+    //   }),
+    //   new webpack.optimize.UglifyJsPlugin(),
+    // ],
     module: {
       rules: [{
         test: /\.jsx?$/,

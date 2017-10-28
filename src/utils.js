@@ -117,3 +117,18 @@ export function removeEvent(el: Object, event: string, handler: Function, useCap
     el[`on${event}`] = null;
   }
 }
+
+export const throttle = (fn:Function, timeout:number = 0 ,...rest:any[]):Function =>{
+  let last:number, previous = 0
+  return () =>{
+    const now = new Date()
+    if( (now - previous) > timeout){
+      clearTimeout(last)
+      fn(...rest)
+      previous = now
+      last = setTimeout(()=>{
+        fn(...rest)
+      },timeout)
+    }
+  }
+}

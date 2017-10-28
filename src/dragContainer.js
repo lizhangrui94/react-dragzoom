@@ -116,9 +116,8 @@ export default class dragContainer extends Component<any, Props, State> {
    * @param {*} nextState
    */
   shouldComponentUpdate(nextProps: Props, nextState: State) {
-    // console.log(this.state.size.current,nextState.size.current)
-    // return !(_.isEqualWith(this.props,nextProps) && _.isEqualWith(this.state,nextState))
-    return true;
+    return !(_.isEqualWith(this.props,nextProps) && _.isEqualWith(this.state,nextState)) || !this.isComplete
+    // return true;
   }
 
 
@@ -134,7 +133,7 @@ export default class dragContainer extends Component<any, Props, State> {
 
   /**
    * 初始化操作，图片加载计算完成后只会执行一次
-   * this.complete 代表是否已经成功初始化，初始值为false
+   * this.complete 代表有points属性时，是否已经成功初始化，初始值为false
    * 参数有points点位跟图片，如果图片先加载，则在willreceiveProps里接受props参数，进行点位的初始化计算，如果图片属于后加载，则在onLoad事件中获得图片大小后
    * 进行点位的初始化计算。图片加载完成后，如果图片有变动，也在willreceiveProps里面进行重新初始化
    */
@@ -414,10 +413,9 @@ export default class dragContainer extends Component<any, Props, State> {
           setParentPosition={this.setParentPosition}
           dragPoints={dragPoints}
           actualImageSize={size.actual}
-          otherChildren={children}
         >
           <div>
-            <img style={{ width: '100%', height: '100%' }} onLoad={this.imageOnLoad} src={img} />
+            {img ?<img style={{ width: '100%', height: '100%' }} onLoad={this.imageOnLoad} src={img} />:null}
             {children}
           </div>
         </DragScale>
