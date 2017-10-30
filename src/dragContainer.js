@@ -26,7 +26,9 @@ type Point = {
 type Props={
   img: string,
   points: Array<any>,
-  disabled?: boolean,
+  disabled: boolean,
+  scaleable:boolean,
+  draggable:boolean,
   maxZoom:number, //最大的放大值
   onDragStop?: Function,
   onSingleDragStop?: Function,
@@ -48,6 +50,12 @@ export default class dragContainer extends Component<any, Props, State> {
   parentPosition: Position = { x: 0, y: 0 }; // 图片的位置
   willComplete:boolean = false;
   isComplete: boolean = false;// 点位跟图片是否初始化完成
+
+  static defaultProps = {
+    scaleable:true,
+    disabled:false,
+    draggable:true,
+  }
 
   constructor(props: Props) {
     super(props);
@@ -411,7 +419,7 @@ export default class dragContainer extends Component<any, Props, State> {
 
   render() {
     const { size } = this.state;
-    const { img, points, children, maxZoom } = this.props;
+    const { img, points, children, maxZoom, scaleable, draggable } = this.props;
     const dragPoints = (
       <div style={{ position: 'absolute', top: '0px', left: '0px', height: '0px' }} ref={rn => this.dragPoints = rn}>
         {this.getDraggablePoints(points)}
@@ -421,7 +429,8 @@ export default class dragContainer extends Component<any, Props, State> {
     return (
       <div style={{ position: 'relative', width: '100%', height: '100%' }}>
         <DragScale
-          scale
+          draggable={draggable}
+          scaleable={scaleable}
           maxZoom={maxZoom}
           changePosition={this.changePosition}
           onSizeChange={this.onSizeChange}

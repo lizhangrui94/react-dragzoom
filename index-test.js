@@ -9,6 +9,6 @@ for(var i=0;i<1;i++){
 }
 
 ReactDOM.render(
-  <DragScale maxZoom={100} img='http://pic29.nipic.com/20130520/9252150_155453366374_2.jpg' points={points}/>,
+  <DragScale scaleable={true} draggable={true} maxZoom={100} img='http://pic29.nipic.com/20130520/9252150_155453366374_2.jpg' points={points}/>,
   document.getElementById('root')
 )
