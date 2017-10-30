@@ -46,6 +46,7 @@ export default class dragContainer extends Component<any, Props, State> {
 
   dragPoints: HTMLElement;
   parentPosition: Position = { x: 0, y: 0 }; // 图片的位置
+  willComplete:boolean = false;
   isComplete: boolean = false;// 点位跟图片是否初始化完成
 
   constructor(props: Props) {
@@ -93,12 +94,13 @@ export default class dragContainer extends Component<any, Props, State> {
     if (nextPoints && nextPoints.length > 0) {
       newNextPoints = nextPoints.map(item => ({ x: item.x, y: item.y, id: item.id }));
     }
+    //切换图片
     if (img !== nextProps.img) {
       size.actual = { width: 0, height: 0 };
       size.current = { width: 0, height: 0 };
       size.lastSize = null
       this.setState({ size, controlledPositions:{} });
-      this.isComplete = false
+      // this.willComplete = false
       return
     }
     if (!isArrayEqual(newPoints, newNextPoints) && size.current.width > 0) {
@@ -106,7 +108,7 @@ export default class dragContainer extends Component<any, Props, State> {
         controlledPositions[item.id] = this.calculatePosition(item);
       });
       this.setState({ controlledPositions });
-      this.isComplete = true;
+      // this.willComplete = true;
     }
   }
 
@@ -116,10 +118,9 @@ export default class dragContainer extends Component<any, Props, State> {
    * @param {*} nextState
    */
   shouldComponentUpdate(nextProps: Props, nextState: State) {
-    return !(_.isEqualWith(this.props,nextProps) && _.isEqualWith(this.state,nextState)) || !this.isComplete
-    // return true;
+    // return !(_.isEqualWith(this.props,nextProps) && _.isEqualWith(this.state,nextState)) || !this.isComplete || !this.willComplete
+    return true;
   }
-
 
   imageOnLoad = (e: Event) => {
     const { size } = this.state;
@@ -144,7 +145,8 @@ export default class dragContainer extends Component<any, Props, State> {
       points.map((item) => {
         controlledPositions[item.id] = this.calculatePosition(item);
       });
-      this.isComplete = true;
+      // this.willComplete = true;
+      // this.isComplete = false;
     }
     // const positionKeys = Object.keys(controlledPositions)
     // positionKeys.map(item=>{
@@ -214,18 +216,63 @@ export default class dragContainer extends Component<any, Props, State> {
   }
 
   /**
+   * 获取边界值，未完成
+   */
+  getboundPosition = (id:string) => {
+    let outBound = false
+    const { parentPosition } = this;
+    const { size, controlledPositions } = this.state;
+    // const { x, y } = position;
+    const { width, height } = size.current;
+    const { x: parentX, y: parentY } = parentPosition;
+    let { x, y, offset: { top, left } } = controlledPositions[id];
+    const bounds = { top: parentY - top, left: parentX - left, right: parentX + width - left, bottom: parentY + height - top };
+    if(x> bounds.right || x <bounds.left){
+      x = x> bounds.right? bounds.right : bounds.left
+      outBound = true
+    }
+    if(y> bounds.bottom || y <bounds.top){
+      y = y> bounds.bottom? bounds.bottom : bounds.top
+      outBound = true
+    }
+    if(outBound){
+      controlledPositions[id] = { ...controlledPositions[id], x, y }
+      this.setState(controlledPositions)
+    }
+    // if (!size.lastSize) {
+    //   size.lastSize = { ...size.initSize };
+    // }
+    // if (x < parentPosition.x || y < parentPosition.y || x > (parentPosition.x + width) || y > (parentPosition.y + height)) {
+    //   // return false
+    // }
+    // return { x, y };
+  }
+
+  /**
    * 控制点位的拖动
    * @param id 点位的id(唯一标识符)
    * @param postition 点位的位置
    */
   onControlledDrag = (id: string, position: Position) => {
     const { controlledPositions } = this.state;
-    const { x, y } = position;
-    if (!this.getboundPosition(position)) {
+    controlledPositions[id] = { ...controlledPositions[id], ...position, id };
+    // this.getboundPosition(id)
+    this.setState({ controlledPositions });
+  }
+
+  /**
+   * 控制单个点位移动结束后执行
+   * @param {*} position 点位的位置
+   */
+  onSingleControlledDragStop = (id: string) => {
+    const { onSingleDragStop } = this.props;
+    this.getboundPosition(id)
+    if (!onSingleDragStop) {
       return;
     }
-    controlledPositions[id] = { ...controlledPositions[id], ...position, id };
-    this.setState({ controlledPositions });
+    const { controlledPositions } = this.state;
+    const newPoint = this.getActualPosition(controlledPositions[id]);
+    onSingleDragStop(newPoint);
   }
 
   /**
@@ -246,37 +293,6 @@ export default class dragContainer extends Component<any, Props, State> {
       this.getActualPosition(controlledPositions[item]),
     );
     onDragStop(positions);
-  }
-
-  /**
-   * 控制单个点位移动结束后执行
-   * @param {*} position 点位的位置
-   */
-  onSingleControlledDragStop = (id: string) => {
-    const { onSingleDragStop } = this.props;
-    if (!onSingleDragStop) {
-      return;
-    }
-    const { controlledPositions } = this.state;
-    const newPoint = this.getActualPosition(controlledPositions[id]);
-    onSingleDragStop(newPoint);
-  }
-
-  /**
-   * 获取边界值，未完成
-   */
-  getboundPosition = (position: Position) => {
-    const { parentPosition } = this;
-    const { size } = this.state;
-    const { x, y } = position;
-    if (!size.lastSize) {
-      size.lastSize = { ...size.initSize };
-    }
-    const { width, height } = size.lastSize;
-    if (x < parentPosition.x || y < parentPosition.y || x > (parentPosition.x + width) || y > (parentPosition.y + height)) {
-      // return false
-    }
-    return true;
   }
 
   /**
@@ -358,7 +374,7 @@ export default class dragContainer extends Component<any, Props, State> {
    * 生成可拖动的点位
    */
   getDraggablePoints = (points: Array<any>) => {
-    const { parentPosition } = this;
+    // const { parentPosition } = this;
     const { controlledPositions, size } = this.state;
     const { disabled } = this.props;
     const isEdit = !disabled;
@@ -366,16 +382,17 @@ export default class dragContainer extends Component<any, Props, State> {
     if (!points || points.length === 0 || width === 0 || height === 0) {
       return;
     }
-    const { x: parentX, y: parentY } = parentPosition;
+    // const { x: parentX, y: parentY } = parentPosition;
 
     try {
       const newPoints = points.map((items) => {
         const { x, y, offset: { top, left } } = controlledPositions[items.id];
-        const bounds = { top: parentY - top, left: parentX - left, right: parentX + width - left, bottom: parentY + height - top };
+        // const bounds = { top: parentY - top, left: parentX - left, right: parentX + width - left, bottom: parentY + height - top };
+        
         return (
           <Draggable
             key={items.id}
-            bounds={bounds}
+            /* bounds={bounds} */
             position={{ x, y }}
             onStop={(e, position: Position) => this.onControlledDragStop(items.id, position)}
             onDrag={isEdit ? (e, position: Position) => this.onControlledDrag(items.id, position) : () => false}
@@ -419,7 +436,6 @@ export default class dragContainer extends Component<any, Props, State> {
             {children}
           </div>
         </DragScale>
-
       </div>
     );
   }
