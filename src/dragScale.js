@@ -10,10 +10,10 @@ import type { Position, Size, typeSize } from './dragContainer';
 
 
 type Props = {
-  scale?: boolean,
+  scaleable: boolean,
   actualImageSize: Size, // 真实图片大小
   maxZoom:number, // 放大的最大值
-  draggable?: boolean,
+  draggable: boolean,
   offsetParent?: HTMLElement | null,
   position?: Position, // 可以控制图片的位置
   changePosition: Function,
@@ -55,7 +55,7 @@ export default class dragScale extends Component {
   constructor(props: Props) {
     super(props);
     this.state = {
-      dragProps: { position: { x: 0, y: 0 } },
+      dragProps: { position: { x: 0, y: 0 }, onDrag: this.handleDrag, onStop:this.handleDragStop },
       bounds: { top: 0, right: 0, bottom: 0, left: 0 },
       initSize: { width: 0, height: 0 },
       currentSize: { width: 0, height: 0 },
@@ -66,13 +66,15 @@ export default class dragScale extends Component {
   }
 
   componentWillMount() {
-    if (this.props.scale) {
-      this.state.dragProps = { ...this.state.dragProps, onDrag: this.handleDrag, onStop:this.handleDragStop };
+    if (!this.props.draggable) {
+      this.setState({
+        dragProps:{ ...this.state.dragProps, onDrag: ()=>false }
+      })
     }
   }
 
   componentDidMount() {
-    const { scale, draggable } = this.props;
+    const { scaleable, draggable } = this.props;
     /* $FlowFixMe */
     document.ondragstart = function () { return false; };
     if (draggable) { // 移动
@@ -80,15 +82,15 @@ export default class dragScale extends Component {
       // 取消移动
     }
 
-    if (scale) { // 缩放
+    if (scaleable) { // 缩放
       addEvent(this.drag, 'mouseover', this.addMoveEvent);
+      addEvent(window, 'resize', this.onContaninerResize);
     }
-    addEvent(window, 'resize', this.onContaninerResize);
   }
 
   componentWillReceiveProps(nextProps: Props) {
-    const { position, actualImageSize, initCalculatePoints } = this.props;
-    const { position: nextPosition, actualImageSize: nextActualImageSize } = nextProps;
+    const { position, actualImageSize, initCalculatePoints, scaleable, draggable } = this.props;
+    const { position: nextPosition, actualImageSize: nextActualImageSize, scaleable:nextScaleable, draggable:nextDraggable } = nextProps;
     if (position && nextPosition && (position.x !== nextPosition.x ||
       position.y !== nextPosition.y)
     ) {
@@ -104,12 +106,28 @@ export default class dragScale extends Component {
       this.props.setParentPosition(parentPosition);
       initCalculatePoints();
     }
+    if(scaleable !== nextScaleable){
+      scaleable ? this.addscale() : this.removeScale()
+    }
+    if(draggable !== nextDraggable){
+      this.setState({
+        dragProps:{ ...this.state.dragProps, onDrag: nextDraggable? this.handleDrag :()=>false }
+      })
+    }
   }
 
   componentWillUnmount() {
-    removeEvent(this.drag, 'mouseover', this.addMoveEvent);
     removeEvent(window, 'resize', this.onContaninerResize);
-    // removeEvent(this.dragContainer,'mousedown',this.init)
+    this.removeScale()
+  }
+
+  addscale = ()=>{
+    addEvent(this.drag, 'mouseover', this.addMoveEvent);
+    addEvent(window, 'resize', this.onContaninerResize);
+  }
+
+  removeScale = ()=>{
+    removeEvent(this.drag, 'mouseover', this.addMoveEvent);
     removeEvent(this.drag, 'mousemove', this.bindResize);
     removeEvent(this.drag, 'wheel', this.resize);
   }
