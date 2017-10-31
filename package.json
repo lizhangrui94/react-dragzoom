@@ -1,6 +1,6 @@
 {
   "name": "react-dragzoom",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "a drag and scale component for react",
   "main": "index.js",
   "author": "lizhangrui",
@@ -9,7 +9,7 @@
     "start": "webpack-dev-server --env.dev --inline --progress --colors",
     "test": "jest",
     "clean": "rm -rf dist",
-    "build": " npm run build-es && npm run build-lib ",
+    "build": " npm run build-es",
     "build-dev": "rm -rf dist && webpack --env.dev --progress --profile --colors",
     "build-lib": "rm -rf lib && webpack --env.prod --progress --profile --colors",
     "build-es": " rm -rf es && babel src --out-dir es && lessc src/index.less > es/index.css ",
