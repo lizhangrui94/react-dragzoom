@@ -8,6 +8,9 @@ type Props={
   img: string,
   points: Array<any>,
   disabled?: boolean,
+  scaleable?:boolean,
+  draggable?:boolean,
+  maxZoom:number, // maxZoom for element
   onDragStop?: Function, //used with points
   onSingleDragStop?: Function, //used with points
   onDrag?: Function,
