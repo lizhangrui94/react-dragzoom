@@ -10,7 +10,7 @@ import type { Position, Size, typeSize } from './dragContainer';
 
 
 type Props = {
-  scale?: boolean,
+  scaleable: boolean,
   actualImageSize: Size, // 真实图片大小
   maxZoom:number, // 放大的最大值
   draggable?: boolean,
@@ -72,7 +72,7 @@ export default class dragScale extends Component {
   }
 
   componentDidMount() {
-    const { scale, draggable } = this.props;
+    const { scaleable, draggable } = this.props;
     /* $FlowFixMe */
     document.ondragstart = function () { return false; };
     if (draggable) { // 移动
@@ -80,10 +80,10 @@ export default class dragScale extends Component {
       // 取消移动
     }
 
-    if (scale) { // 缩放
+    if (scaleable) { // 缩放
       addEvent(this.drag, 'mouseover', this.addMoveEvent);
+      addEvent(window, 'resize', this.onContaninerResize);
     }
-    addEvent(window, 'resize', this.onContaninerResize);
   }
 
   componentWillReceiveProps(nextProps: Props) {
