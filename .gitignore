@@ -1,4 +1,4 @@
-/node_modules/
+**/node_modules/
 .svn
 node_modules.zip
 /.idea/

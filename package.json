@@ -1,10 +1,6 @@
 {
   "name": "react-dragzoom",
-<<<<<<< HEAD
   "version": "0.2.0",
-=======
-  "version": "0.2.4",
->>>>>>> f98984b... 更新readme props属性
   "description": "a drag and scale component for react",
   "main": "index.js",
   "author": "lizhangrui",
@@ -13,12 +9,9 @@
     "start": "webpack-dev-server --env.dev --inline --progress --colors",
     "test": "jest",
     "clean": "rm -rf dist",
-    "build": " npm run build-es && npm run build-lib ",
-    "build-dev": "rm -rf dist && webpack --env.dev --progress --profile --colors",
-    "build-lib": "rm -rf lib && webpack --env.prod --progress --profile --colors",
+    "build": " npm run build-es",
     "build-es": " rm -rf es && babel src --out-dir es && lessc src/index.less > es/index.css ",
-    "build-prod": "rm -rf dist && webpack --env.prod --progress --profile --colors",
-    "lint": "eslint \"src/**/*.@(js|jsx)\" -f node_modules/eslint-html-reporter/reporter.js -o eslint_report.html",
+    "lint": "eslint \"src/**/*.@(js|jsx)\" -f",
     "flow": "flow check || exit 0"
   },
   "dependencies": {
@@ -28,16 +21,7 @@
     "react-draggable": "^2.2.6"
   },
   "devDependencies": {
-    "react-test-renderer": "^15.6.1",
     "babel-cli": "^6.24.1",
-    "babel-core": "^6.4.0",
-    "babel-eslint": "^7.2.3",
-    "babel-loader": "^6.2.1",
-    "babel-plugin-import": "^1.1.1",
-    "babel-plugin-transform-decorators-legacy": "^1.3.4",
-    "babel-plugin-transform-flow-strip-types": "^6.22.0",
-    "babel-plugin-transform-object-rest-spread": "^6.23.0",
-    "babel-plugin-transform-runtime": "^6.23.0",
     "babel-preset-es2015": "^6.3.13",
     "babel-preset-flow": "^6.23.0",
     "babel-preset-react": "^6.3.13",
@@ -56,14 +40,8 @@
     "jest": "^20.0.4",
     "less": "^2.7.2",
     "less-loader": "^4.0.3",
-    "open-browser-webpack-plugin": "0.0.2",
-    "react-hot-loader": "^1.3.0",
-    "style-loader": "^0.13.0",
-    "url-loader": "^0.5.7",
-    "webpack": "^2.2.0",
-    "webpack-dev-middleware": "^1.9.0",
-    "webpack-dev-server": "^2.4.2",
-    "webpack-hot-middleware": "^2.15.0"
+    "react-test-renderer": "^15.6.1",
+    "style-loader": "^0.13.0"
   },
   "jest": {
     "moduleNameMapper": {

@@ -4,8 +4,7 @@
       modules: 'commonjs'
     }], 'react', 'stage-2','flow'
   ],
-  "plugins": ['transform-runtime',"transform-decorators-legacy",["import",{"libraryName": "antd","style": true},"transform-flow-strip-types"],
-  ],
+  "plugins": [],
   "compact": false
 }
 

@@ -1,5 +1,6 @@
 # /node_modules/* and /bower_components/* ignored by default
-/node_modules/* 
+**/node_modules/*
+/examples/
 # Ignore built files except build/index.js
 dist/*
 !/.flowconfig
