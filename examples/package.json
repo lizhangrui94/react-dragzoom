@@ -1,0 +1,21 @@
+{
+  "name": "examples",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "alpha-tool start --eslint=false",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@alpha/dev-tools": "^1.2.3"
+  },
+  "config": {
+    "port": 8001,
+    "title": "智慧农业物联网",
+    "prodRouter": "/iot/agriculture/platform"
+  },
+  "antdTheme": {}
+}
