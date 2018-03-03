@@ -1,0 +1,7 @@
+/**
+ * @flow
+ */
+
+function enhance(Component) {
+
+}

@@ -2,7 +2,13 @@
  * @flow
  */
 
-import dragZoom from './dragContainer'
+import DragZoom from './Dragzoom'
+import DragzoomCanvas from './DragzoomCanvas'
+import DragzoomItems from './DragzoomItems'
+import DragzoomItem from './DragzoomItem'
 import './index.less'
 
-module.exports = dragZoom
+
+export { DragzoomCanvas, DragzoomItems, DragzoomItem }
+
+export default DragZoom

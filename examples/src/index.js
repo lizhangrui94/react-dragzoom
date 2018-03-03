@@ -1,7 +1,7 @@
 // import DragScale from './lib/react-dragScale';
 import React from 'react'
 import ReactDOM from 'react-dom'
-import DragScale from 'react-dragzoom'
+import App from './app'
 
 var points = []
 for(var i=0;i<1;i++){
@@ -9,6 +9,6 @@ for(var i=0;i<1;i++){
 }
 
 ReactDOM.render(
-  <DragScale scaleable={true} draggable={false} maxZoom={100} img='http://pic29.nipic.com/20130520/9252150_155453366374_2.jpg' points={points}/>,
+  <App />,
   document.getElementById('root')
 )
