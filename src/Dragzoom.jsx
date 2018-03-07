@@ -652,7 +652,7 @@ export default class Dragzoom extends React.Component<Props, State> {
     }
     const showScale = (scaleNum * 100).toFixed(0)
     return (
-      <div className="dragzoom" id="dragzoom" ref={rn => this.dragContainer = rn} style={{ position: 'relative', ...this.props.style }}>
+      <div className="dragzoom" id="dragzoom" style={{ position: 'relative', ...this.props.style }}>
         {/* <div className='drag-mask'></div> */}
         <div className="drag-wrap" ref={ rn => this.drag = rn} style={{ height: '100%', width: '100%', position: 'relative' }}>
           <Draggable {...dragProps}>
