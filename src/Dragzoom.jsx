@@ -633,11 +633,13 @@ export default class Dragzoom extends React.Component<Props, State> {
   renderCommonItem = (child: any) => {
     const { width, height } = this.state.currentSize
     if (width === 0 || height === 0) { return }
-    if (child.type.isDragItems) {}
-    if (child.type.isDragCanvas) {}
     const childProps = {
       onControlledDrag: this.onControlledDrag,
       onControlledDragStop: this.onControlledDragStop,
+    }
+    if (child.type.isDragItems) {}
+    if (child.type.isDragCanvas) {
+      return React.cloneElement(child, {childProps, containerSize: this.containerSize})
     }
     return React.cloneElement(child, {getChildPosition: this.getChildPosition, childProps})
   }

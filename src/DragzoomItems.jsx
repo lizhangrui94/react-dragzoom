@@ -21,7 +21,7 @@ export default class DragzoomItems extends React.Component<Props, State> {
   static isDragItems = 1
 
   componentWillReceiveProps(nextProps: Props) {
-
+    console.log(111111111)
   }
 
   renderItem = (child: any) => {
