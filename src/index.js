@@ -3,12 +3,12 @@
  */
 
 import DragZoom from './Dragzoom'
-import DragzoomCanvas from './DragzoomCanvas'
+import DragzoomPolygon from './DragzoomPolygon'
 import DragzoomItems from './DragzoomItems'
 import DragzoomItem from './DragzoomItem'
 import './index.less'
 
 
-export { DragzoomCanvas, DragzoomItems, DragzoomItem }
+export { DragzoomPolygon, DragzoomItems, DragzoomItem }
 
 export default DragZoom

@@ -16,7 +16,7 @@ type State = {
 
 }
 
-export default class DragzoomCanvas extends React.Component<Props, State> {
+export default class DragzoomPolygon extends React.Component<Props, State> {
   static isDragCanvas = 1
 
   canvas: HTMLCanvasElement

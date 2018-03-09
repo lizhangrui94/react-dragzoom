@@ -5,6 +5,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import Draggable from 'react-draggable'
+import DragzoomCanvas from './DragzoomCanvas'
 import createFieldsStore from './createFieldsStore'
 import { getinlinePosition, addEvent, removeEvent } from './utils'
 
@@ -57,14 +58,15 @@ export default class Dragzoom extends React.Component<Props, State> {
   }
 
   drag: HTMLElement | null
+  imageElement: HTMLImageElement | null
   containerSize: Size = { ...uninitialSize } // 父容器的大小
   actualImageSize: Size = { ...uninitialSize } //实际图片大小
   initImageSize: Size = { ...uninitialSize } // 初始化的大小
   initPosition: Position = { x: 0, y: 0 } // 图片初始化的位置
   lastPosition: Position = { x: 0, y: 0 } // 图片上一次位置
   currentPosition: Position = { x: 0, y: 0} // 图片的位置
-  lastScale: {mouseX: number, mouseY: number}  // 存储上一次的鼠标位置
-  refreshScale: {mouseX: number, mouseY: number}  // 存储上一次的鼠标位置
+  lastScale: {mouseX: number, mouseY: number}  // 鼠标移动后在图片中的位置
+  refreshScale: {mouseX: number, mouseY: number} // 缩放后在图片中的位置
   controlledPositions: {[string]: Point} = {} // 点位信息
   constructor(props: Props) {
     super(props)
@@ -90,6 +92,7 @@ export default class Dragzoom extends React.Component<Props, State> {
         dragProps:{ ...this.state.dragProps, onDrag: ()=>false }
       })
     }
+    this.resetAllData()
   }
   
   componentDidMount() {
@@ -101,28 +104,10 @@ export default class Dragzoom extends React.Component<Props, State> {
 
   componentWillReceiveProps(nextProps: Props) {
     const { img } = this.props
-    // const { controlledPositions, size } = this.state
-    // // 传入的点位不相等，并且图片已经加载完成
-    // let newPoints = [],
-    //   newNextPoints = []
-    // if (points && points.length > 0) {
-    //   newPoints = points.map(item => ({ x: item.x, y: item.y, id: item.id }))
-    // }
-    // if (nextPoints && nextPoints.length > 0) {
-    //   newNextPoints = nextPoints.map(item => ({ x: item.x, y: item.y, id: item.id }))
-    // }
     //切换图片
     if (this.props.img !== nextProps.img) {
       this.resetAllData()
-      return
     }
-    // if (!isArrayEqual(newPoints, newNextPoints) && size.current.width > 0) {
-    //   nextPoints.map((item) => {
-    //     controlledPositions[item.id] = this.calculatePosition(item)
-    //   })
-    //   this.setState({ controlledPositions })
-    //   // this.willComplete = true
-    // }
   }
 
   componentWillUnmount() {
@@ -166,6 +151,9 @@ export default class Dragzoom extends React.Component<Props, State> {
     const currentSize = { ...uninitialSize }
     const lastSize = { ...uninitialSize }
     this.controlledPositions = {}
+    this.imageElement = new Image()
+    this.imageElement.src = this.props.img
+    this.imageElement.onload = this.imageOnLoad
     this.setState({ currentSize, lastSize })
   }
   
@@ -334,9 +322,6 @@ export default class Dragzoom extends React.Component<Props, State> {
     if (Math.abs(value - max) * 100 < 10 || value > max) { // 最大值
       return max
     }
-    // if(Math.abs(value-init)*100<2){ // 进页面压缩后的值
-    //   return init
-    // }
     if (Math.abs(value - 1) * 100 < 10) { // 图片为100%时候的值
       return 1
     }
@@ -436,12 +421,11 @@ export default class Dragzoom extends React.Component<Props, State> {
       const { naturalWidth, naturalHeight } = target
       const actualSize = { width: naturalWidth, height: naturalHeight }
       this.actualImageSize = actualSize
-      // this.setState({ currentSize : { ...actualSize }})
       this.init()
     }
   }
 
-  /** 开始容器拖拽 */
+  /** 开始容器拖拽, 同时改变上面的点， 此时不能停止更新 */
   handleDrag = (e: Event, ui: Object) => {
     if (this.actualImageSize.width <= 0) {
       return
@@ -453,49 +437,26 @@ export default class Dragzoom extends React.Component<Props, State> {
     const initWidth = this.containerSize.width
     const initHeight = this.containerSize.height
 
-    // 拖动块的宽高跟parent宽高的差值
+    // 拖动块的宽高跟parent宽高的差值,
+    /** TODO:下面的函数纯粹为了dragstop的时候可以有重置的位置，可以改成非state */
     const width = currentSize.width - initWidth
     const height = currentSize.height - initHeight
-    let showUpdate = true
     if (currentSize.width > initWidth) { // x超出父元素
-      if (x >= 0) {
-        left = 0
-        showUpdate = false
-      }
-      if (x < -width) {
-        left = -width
-        showUpdate = false
-      }
-    } else {
-      left = (initWidth - currentSize.width) / 2
-      showUpdate = false
-    }
+      if (x >= 0) { left = 0 }
+      if (x < -width) { left = -width }
+    } else { left = (initWidth - currentSize.width) / 2 }
+
     if (currentSize.height > initHeight) { // y超出父元素
-      if (y >= 0) {
-        top = 0
-        showUpdate = false
-      }
-      if (y < -height) {
-        top = -height
-        showUpdate = false
-      }
-    } else {
-      top = (initHeight - currentSize.height) / 2
-      showUpdate = false
-    }
-    if (!showUpdate) {
-      // return showUpdate
-    }
-    position = { x: left, y: top }
-    
-    dragProps.position = position
+      if (y >= 0) { top = 0 }
+      if (y < -height) { top = -height }
+    } else { top = (initHeight - currentSize.height) / 2 }
+    dragProps.position = { x: left, y: top }
     this.setState({ dragProps })
   }
 
   /** 容器拖拽停止 */
   handleDragStop = () => {
-    const { dragProps } = this.state
-    const { position } = dragProps
+    const { position } = this.state.dragProps
     this.changePosition(position)
   }
 
@@ -544,8 +505,6 @@ export default class Dragzoom extends React.Component<Props, State> {
     const scale = actualImageSize.width / currentSize.width
     const newWidth = width * scale
     const newHeight = height * scale
-    // newWidth += offset.left
-    // newHeight += offset.top
     return ({ x: Number(newWidth.toFixed(2)), y: Number(newHeight.toFixed(2)), id })
   }
 
@@ -559,7 +518,6 @@ export default class Dragzoom extends React.Component<Props, State> {
     return controlledPositions[id]
   }
   
-
   /**
    * 获取边界值
    */
@@ -633,15 +591,26 @@ export default class Dragzoom extends React.Component<Props, State> {
   renderCommonItem = (child: any) => {
     const { width, height } = this.state.currentSize
     if (width === 0 || height === 0) { return }
-    const childProps = {
-      onControlledDrag: this.onControlledDrag,
-      onControlledDragStop: this.onControlledDragStop,
+    if (child.type.isDragItems) {
+      const childProps = {
+        onControlledDrag: this.onControlledDrag,
+        onControlledDragStop: this.onControlledDragStop,
+      }
+      return React.cloneElement(child, {getChildPosition: this.getChildPosition, childProps})
     }
-    if (child.type.isDragItems) {}
-    if (child.type.isDragCanvas) {
-      return React.cloneElement(child, {childProps, containerSize: this.containerSize})
+  }
+
+  renderCanvas = () => {
+    const { width, height } = this.state.currentSize
+    if (width === 0 || height === 0) return
+    const canvasProps = {
+      imageElement: this.imageElement,
+      currentSize: this.state.currentSize,
+      actualImageSize: this.actualImageSize,
+      containerSize: this.containerSize,
+      currentPosition: this.currentPosition,
     }
-    return React.cloneElement(child, {getChildPosition: this.getChildPosition, childProps})
+    return <DragzoomCanvas {...canvasProps} />
   }
   
   render() {
@@ -657,11 +626,9 @@ export default class Dragzoom extends React.Component<Props, State> {
       <div className="dragzoom" id="dragzoom" style={{ position: 'relative', ...this.props.style }}>
         {/* <div className='drag-mask'></div> */}
         <div className="drag-wrap" ref={ rn => this.drag = rn} style={{ height: '100%', width: '100%', position: 'relative' }}>
+          {this.renderCanvas()}
           <Draggable {...dragProps}>
-            <div style={newStyle}>
-              {img ?<img style={{ width: '100%', height: '100%' }} onLoad={this.imageOnLoad} src={img} />:null}
-              {/* {this.props.children} */}
-            </div>
+            <div style={newStyle} />
           </Draggable>
           {React.Children.map(this.props.children, this.renderCommonItem)}
           {showScaleNum ? <span className="scaleNum">{`${showScale}%`}</span> : null}
