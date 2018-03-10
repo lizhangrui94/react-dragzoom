@@ -6,6 +6,7 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import Draggable from 'react-draggable'
 import DragzoomCanvas from './DragzoomCanvas'
+import DragSinglePolygon from './DragSinglePolygon'
 import createFieldsStore from './createFieldsStore'
 import { getinlinePosition, addEvent, removeEvent } from './utils'
 
@@ -26,6 +27,7 @@ type Props = {
   maxZoom: number,
   children: any,
   disabled?: boolean,
+  polygonDragDisabled: boolean,
   scaleable?:boolean,
   draggable?:boolean,
 }
@@ -35,9 +37,12 @@ type State = {
   currentSize: Size,
   lastSize: Size,
   dragProps: {position: {x: number, y: number, onStart?: ()=>mixed, onDrag?: ()=>mixed}}, // 传入react-draggable的属性
+  childDragProps: {position: {x: number, y: number, onStart?: ()=>mixed, onDrag?: ()=>mixed}},
   canDraggable: boolean, // 能否拖动,
   scaleNum: number, // 缩放比例
   showScaleNum: boolean, // 显示缩放比例
+  isPolygonDrag: boolean, // 自定义图形是否拖动
+  
 }
 
 type Point = {
@@ -51,14 +56,16 @@ export default class Dragzoom extends React.Component<Props, State> {
     scaleable:true,
     disabled:false,
     draggable:true,
+    polygonDragDisabled: true,
     onSizeChange: noop,
     // onSingleDragStop: noop,
     onDragStop: noop,
     onDrag: noop,
   }
-
+  canvasPolygon: any
   drag: HTMLElement | null
-  imageElement: HTMLImageElement | null
+  childDrag: HTMLDivElement
+  imageElement: HTMLImageElement
   containerSize: Size = { ...uninitialSize } // 父容器的大小
   actualImageSize: Size = { ...uninitialSize } //实际图片大小
   initImageSize: Size = { ...uninitialSize } // 初始化的大小
@@ -68,6 +75,8 @@ export default class Dragzoom extends React.Component<Props, State> {
   lastScale: {mouseX: number, mouseY: number}  // 鼠标移动后在图片中的位置
   refreshScale: {mouseX: number, mouseY: number} // 缩放后在图片中的位置
   controlledPositions: {[string]: Point} = {} // 点位信息
+  currentPolygonPath: Array<[number, number]> = [] // 当前自定义图层路径
+  currentPolygon: { id: string, path: Array<[number, number]>} = { id: '', path: [] }
   constructor(props: Props) {
     super(props)
     this.state = {
@@ -76,12 +85,10 @@ export default class Dragzoom extends React.Component<Props, State> {
       currentSize: { ...uninitialSize },
       lastSize : { ...uninitialSize },
       dragProps: { position: { x: 0, y: 0 }, onDrag: this.handleDrag, onStop:this.handleDragStop },
+      childDragProps: { position: { x: 0, y: 0 }, onDrag: this.handleChildDrag, onStop:this.handleChildDragStop },
       canDraggable: true,
+      isPolygonDrag: false,
     }
-  }
-
-  getChildContext() {
-
   }
 
   componentWillMount() {
@@ -151,9 +158,6 @@ export default class Dragzoom extends React.Component<Props, State> {
     const currentSize = { ...uninitialSize }
     const lastSize = { ...uninitialSize }
     this.controlledPositions = {}
-    this.imageElement = new Image()
-    this.imageElement.src = this.props.img
-    this.imageElement.onload = this.imageOnLoad
     this.setState({ currentSize, lastSize })
   }
   
@@ -174,10 +178,10 @@ export default class Dragzoom extends React.Component<Props, State> {
     }
     const { width: actualWidth, height: actualHeight } = this.actualImageSize
     const { onSizeChange, maxZoom } = this.props
-    const { currentSize, scaleNum } = this.state
+    const { currentSize, scaleNum, isPolygonDrag } = this.state
     const { dragProps } = this.state
 
-    if (actualWidth <= 0) {
+    if (actualWidth <= 0 || isPolygonDrag) {
       return
     }
     const scaling = e.deltaY < 0 ? 1.25 : 0.8
@@ -470,6 +474,21 @@ export default class Dragzoom extends React.Component<Props, State> {
     const y = point.y - offset.top
     return { ...point, x, y, offset }
   }
+  
+  /** 转换成虚拟坐标 */
+  calculateAllPosition = (position: Array<[number, number]>, currentPosition: Position = this.currentPosition) => {
+    const {x, y} = currentPosition
+    const scale = this.state.currentSize.width / this.actualImageSize.width
+    return position.map(([pointX, pointY]) => [pointX*scale+x, pointY*scale+y])
+  }
+
+  /** 转换成真实坐标 */
+  getAllActualPosition = (position: Array<[number, number]>) => {
+    const { currentPosition: {x ,y} } = this
+    // let { position: { x:newX, y:newY } } = this.state.childDragProps
+    const scale = this.state.currentSize.width / this.actualImageSize.width
+    return position.map(([pointX, pointY]) => [(pointX-x)/scale, (pointY-y)/scale])
+  }
 
   /**
    * 传入未经计算过的点位信息，返回相对于拖动层的图片位置,带偏移量的点需要进行偏移校正
@@ -588,6 +607,88 @@ export default class Dragzoom extends React.Component<Props, State> {
     onDragStop(positions)
   }
 
+  /** 自定义图层拖拽 */
+  handleChildDrag = (e: Event, ui: Object) => {
+    if (this.actualImageSize.width <= 0) return
+    const { childDragProps } = this.state
+    const { x, y } = ui
+    childDragProps.position = { x, y }
+    this.setState({ childDragProps })
+  }
+
+  /** 自定义图层拖动停止 */
+  handleChildDragStop = (e: Event, ui: Object) => {
+    const path = this.getAllActualPosition(this.currentPolygonPath)
+    this.currentPolygon.path = path
+    this.onPolygonDragStop()
+  }
+
+  /** 自定义图层拖动开始 path为真实路径 */
+  onPolygonDragStart = (id: string, path: Array<[number, number]>, e: MouseEvent) => {
+    const { childDragProps } = this.state
+    childDragProps.position = {...this.currentPosition}
+    this.currentPolygon = {id, path}
+    this.canvasPolygon.setShouldUpdate(false)
+    const event = new MouseEvent("mousedown", {
+      bubbles: true,
+      cancelable: true,
+      view: window,
+      clientX: e.clientX,
+      clientY: e.clientY,
+    })
+    this.setState({ isPolygonDrag: true, childDragProps }, () => this.childDrag.dispatchEvent(event))
+    
+    
+  }
+
+  onPolygonDragStop = () => {
+    this.canvasPolygon.setShouldUpdate(true)
+    this.setState({ isPolygonDrag: false }, () => this.currentPolygon = { id: '', path: []} )
+    this.currentPolygonPath = []
+  }
+
+  savePolygonPath = (path: Array<[number, number]>) => {
+    this.currentPolygonPath = path
+  }
+
+  renderDragCanvasPolygon = (child: any) => {
+    const { width, height } = this.state.currentSize
+    if (width === 0 || height === 0) { return }
+    if (child.type.isDragCanvasPolygon) {
+      const canvasProps = {
+        containerSize: this.containerSize,
+        currentPosition: this.state.childDragProps.position,
+        calculateAllPosition: this.calculateAllPosition,
+        ...this.currentPolygon,
+        savePolygonPath: this.savePolygonPath,
+      }
+      return <DragSinglePolygon {...canvasProps} />
+    }
+  }
+
+  renderCanvasPolygon = (child: any) => {
+    const { width, height } = this.state.currentSize
+    if (width === 0 || height === 0) { return }
+    if (child.type.isDragCanvasPolygon) {
+      const path = this.currentPolygonPath
+      let canvasProps = {
+        currentSize: this.state.currentSize,
+        actualImageSize: this.actualImageSize,
+        containerSize: this.containerSize,
+        currentPosition: this.currentPosition,
+        calculateAllPosition: this.calculateAllPosition,
+        onPolygonDragStart: this.onPolygonDragStart,
+        getAllActualPosition: this.getAllActualPosition,
+        // isCurrentPolygon: child.props.id === this.currentPolygon.id,
+        ref: (rn: any) => this.canvasPolygon = rn
+      }
+      if(!this.state.isPolygonDrag) {
+        canvasProps = { ...canvasProps, ...this.currentPolygon }
+      }
+      return React.cloneElement(child, canvasProps)
+    }
+  }
+
   renderCommonItem = (child: any) => {
     const { width, height } = this.state.currentSize
     if (width === 0 || height === 0) { return }
@@ -614,8 +715,15 @@ export default class Dragzoom extends React.Component<Props, State> {
   }
   
   render() {
-    const { img } = this.props
-    const { dragProps, canDraggable, currentSize: { width, height }, scaleNum, showScaleNum } = this.state
+    const { img, polygonDragDisabled } = this.props
+    const {
+      dragProps,
+      canDraggable,
+      currentSize: { width, height },
+      scaleNum,
+      showScaleNum,
+      isPolygonDrag,
+    } = this.state
     const newStyle = {
       width: `${width}px`,
       height: `${height}px`,
@@ -624,12 +732,13 @@ export default class Dragzoom extends React.Component<Props, State> {
     const showScale = (scaleNum * 100).toFixed(0)
     return (
       <div className="dragzoom" id="dragzoom" style={{ position: 'relative', ...this.props.style }}>
-        {/* <div className='drag-mask'></div> */}
+        <img ref={(rn: any) => this.imageElement = rn} src={img} onLoad={this.imageOnLoad} style={{display: 'none'}} />
         <div className="drag-wrap" ref={ rn => this.drag = rn} style={{ height: '100%', width: '100%', position: 'relative' }}>
           {this.renderCanvas()}
-          <Draggable {...dragProps}>
-            <div style={newStyle} />
-          </Draggable>
+          {React.Children.map(this.props.children, this.renderCanvasPolygon)}
+          {polygonDragDisabled? <Draggable {...dragProps}><div style={newStyle} /></Draggable> :null}
+          {isPolygonDrag? React.Children.map(this.props.children, this.renderDragCanvasPolygon) : null}
+          <Draggable {...this.state.childDragProps}><div ref={(rn: any) => this.childDrag = rn} style={{...newStyle, display: isPolygonDrag? 'block':'none'}} /></Draggable>
           {React.Children.map(this.props.children, this.renderCommonItem)}
           {showScaleNum ? <span className="scaleNum">{`${showScale}%`}</span> : null}
         </div>

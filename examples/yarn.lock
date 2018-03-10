@@ -2,9 +2,9 @@
 # yarn lockfile v1
 
 
-"@alpha/dev-tools@^1.2.3":
-  version "1.2.3"
-  resolved "http://192.168.110.250:7001/@alpha/dev-tools/download/@alpha/dev-tools-1.2.3.tgz#146e43368eaedf0c8c112cd044c0d3e0f948c2ca"
+"@alpha/dev-tools@1.2.4":
+  version "1.2.4"
+  resolved "http://192.168.110.250:7001/@alpha/dev-tools/download/@alpha/dev-tools-1.2.4.tgz#c7d5471a15be30de6b960b65d5a06f1da138ba7e"
   dependencies:
     babel-cli "^6.26.0"
     babel-eslint "^8.0.2"
@@ -6620,3 +6620,7 @@ yargs@~3.10.0:
     cliui "^2.1.0"
     decamelize "^1.0.0"
     window-size "0.1.0"
+
+yarn@^1.5.1:
+  version "1.5.1"
+  resolved "http://registry.npm.taobao.org/yarn/download/yarn-1.5.1.tgz#e8680360e832ac89521eb80dad3a7bc27a40bab4"

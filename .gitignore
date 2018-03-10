@@ -2,6 +2,7 @@
 .svn
 node_modules.zip
 /.idea/
+/flow-typed/
 .vscode
 dist
 /es/

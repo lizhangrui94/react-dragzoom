@@ -10,7 +10,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@alpha/dev-tools": "^1.2.3"
+    "@alpha/dev-tools": "1.2.4",
+    "yarn": "^1.5.1"
   },
   "config": {
     "port": 8001,

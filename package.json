@@ -16,8 +16,6 @@
   },
   "dependencies": {
     "lodash": "^4.17.4",
-    "react": "15.6.1",
-    "react-dom": "15.6.1",
     "react-draggable": "^2.2.6"
   },
   "devDependencies": {
@@ -40,6 +38,8 @@
     "jest": "^20.0.4",
     "less": "^2.7.2",
     "less-loader": "^4.0.3",
+    "react": "^16.2.0",
+    "react-dom": "^16.2.0",
     "react-test-renderer": "^15.6.1",
     "style-loader": "^0.13.0"
   },

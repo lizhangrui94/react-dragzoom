@@ -20,26 +20,37 @@ export default class DragzoomCanvas extends React.Component<Props, State> {
   static isDragCanvas = 1
 
   canvas: HTMLCanvasElement
-  context: CanvasRenderingContext2D
+  context2D: CanvasRenderingContext2D
 
   componentDidMount() {
     this.initCanvas()
+    
   }
 
   componentWillReceiveProps(nextProps: Props) {
     this.updataCanvas(nextProps)
   }
 
+  componentWillUnmount() {
+    
+  }
+
+  handleClick = (e: MouseEvent) => {
+    if(this.context2D.isPointInStroke) {
+      console.log(e)
+    }
+  }
+
   initCanvas = () => {
     const { containerSize } = this.props
-    this.context = this.canvas.getContext("2d")
+    this.context2D = this.canvas.getContext("2d")
     this.canvas.width = containerSize.width
     this.canvas.height = containerSize.height
     this.updataCanvas(this.props)
   }
 
   updataCanvas = (props: Props) => {
-    const context = this.context
+    const context2D = this.context2D
     const {
       imageElement,
       containerSize,
@@ -47,8 +58,8 @@ export default class DragzoomCanvas extends React.Component<Props, State> {
       actualImageSize,
       currentPosition,
     } = props
-    context.clearRect(0, 0, containerSize.width, containerSize.height)
-    context.drawImage(
+    context2D.clearRect(0, 0, containerSize.width, containerSize.height)
+    context2D.drawImage(
       imageElement,
       0,
       0,
@@ -60,7 +71,7 @@ export default class DragzoomCanvas extends React.Component<Props, State> {
       currentSize.height
     )
   }
-
+  
   render() {
     return (
       <canvas
