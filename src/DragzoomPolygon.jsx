@@ -23,7 +23,6 @@ type Props = {
   actualImageSize: Size,
   containerSize: Size,
   currentPosition: Position,
-  currentPolygon: Object,
   calculateAllPosition: (Path) => Path,
   getAllActualPosition: (Path) => Path,
   onPolygonDragStart: Function,
@@ -46,7 +45,8 @@ export default class DragzoomPolygon extends React.Component<Props, State> {
   canvas: HTMLCanvasElement
   context2D: CanvasRenderingContext2D
   childPath: {[string]:Array<[number, number]>} = {} // 保存变化之后的位置
-  dragPolygon: Object = {}
+  dragPolygon: Object = {} // 保存拖动状态的图形
+  currentPolygon: Object = {}
   position: [number, number] | void
   event: MouseEvent | void
   update: boolean = true // 是否更新
@@ -68,6 +68,13 @@ export default class DragzoomPolygon extends React.Component<Props, State> {
 
   setShouldUpdate = (bool: boolean) => {
     this.update = bool
+  }
+
+  /** 拖动状态取消后会触发此函数 */
+  setPolygon = ({id, path}: { id:string, path: Array<[number, number]> }) => {
+    this.currentPolygon = {id, path}
+    this.childPath[id] = path
+    delete this.dragPolygon[id]
   }
 
   dragStart = (e: MouseEvent) => {
@@ -93,7 +100,6 @@ export default class DragzoomPolygon extends React.Component<Props, State> {
   }
 
   renderPolygon = (path: Path, props: { id: string, path: Path }) => {
-    console.log(111111111)
     const context2D = this.context2D
     context2D.save()
     context2D.beginPath()
@@ -129,17 +135,17 @@ export default class DragzoomPolygon extends React.Component<Props, State> {
       capture,
     } = props
     const context2D = this.context2D
+    const {id: currentId, path: currentPath} = this.currentPolygon
     context2D.clearRect(0, 0, containerSize.width, containerSize.height)
     React.Children.forEach(props.children, child => {
-      const { id, path } = child.props
-      if( props.id === id ) {
-        this.childPath[id] = props.path
-        delete this.dragPolygon[id]
-        this.renderPolygon(props.calculateAllPosition(props.path), props)
+      let { id, path } = child.props
+      path = this.childPath[id] || path // 如果本地保存着path,则使用本地值
+      if( currentId == id ) {
+        this.renderPolygon(props.calculateAllPosition(currentPath), this.currentPolygon)
       }
       else {
-        if (this.dragPolygon[id]) return
-        this.renderPolygon(props.calculateAllPosition(this.childPath[id] || path), { capture, id, path: this.childPath[id] || path })
+        if (this.dragPolygon[id]) return  // 当前是否有处于拖动状态的图形
+        this.renderPolygon(props.calculateAllPosition(path), { capture, id, path })
       }
       
     })

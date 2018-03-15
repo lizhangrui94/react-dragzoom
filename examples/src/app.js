@@ -4,7 +4,7 @@ import Dragzoom, { DragzoomPolygon, DragzoomItems, DragzoomItem } from 'react-dr
 const Polygon = DragzoomPolygon.Polygon
 export default class App extends React.Component{
   state = {
-    img: 'http://pic24.photophoto.cn/20120814/0005018348123206_b.jpg',
+    img: 'http://www.pconline.com.cn/pcedu/photo/0604/pic/060429cg03.jpg',
   }
 
   componentDidMount() {
@@ -19,7 +19,7 @@ export default class App extends React.Component{
       [
         <Dragzoom key="1" img={this.state.img} polygonDragDisabled={false}>
           <DragzoomPolygon capturePosition={console.log}>
-            {new Array(1000).fill(null).map((item, index) =>
+            {new Array(1).fill(null).map((item, index) =>
               <Polygon id={index+2} path={[[100,100],[100,300],[300,100],[300,300]]}/>
             )}
             

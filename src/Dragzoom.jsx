@@ -41,7 +41,7 @@ type State = {
   canDraggable: boolean, // 能否拖动,
   scaleNum: number, // 缩放比例
   showScaleNum: boolean, // 显示缩放比例
-  isPolygonDrag: boolean, // 自定义图形是否拖动
+  isPolygonDrag: boolean, // 当前有自定义图形处于拖动状态
   
 }
 
@@ -679,11 +679,10 @@ export default class Dragzoom extends React.Component<Props, State> {
         calculateAllPosition: this.calculateAllPosition,
         onPolygonDragStart: this.onPolygonDragStart,
         getAllActualPosition: this.getAllActualPosition,
-        // isCurrentPolygon: child.props.id === this.currentPolygon.id,
         ref: (rn: any) => this.canvasPolygon = rn
       }
-      if(!this.state.isPolygonDrag) {
-        canvasProps = { ...canvasProps, ...this.currentPolygon }
+      if(!this.state.isPolygonDrag) { // 如果不处于拖动状态, 把更新后的值传入
+        this.canvasPolygon && this.canvasPolygon.setPolygon(this.currentPolygon)
       }
       return React.cloneElement(child, canvasProps)
     }
