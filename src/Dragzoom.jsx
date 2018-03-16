@@ -21,6 +21,7 @@ type Props = {
   img: string,
   style: HTMLStyleElement,
   onSizeChange: Function,
+  controlPaint: Function,
   onSingleDragStop?: Function,
   onDragStop: Function, //used with points
   onDrag: Function,
@@ -657,6 +658,7 @@ export default class Dragzoom extends React.Component<Props, State> {
     if (child.type.isDragCanvasPolygon) {
       const canvasProps = {
         containerSize: this.containerSize,
+        controlPaint: this.props.controlPaint,
         currentPosition: this.state.childDragProps.position,
         calculateAllPosition: this.calculateAllPosition,
         ...this.currentPolygon,

@@ -18,6 +18,7 @@ type Path = Array<[number, number]>
 type Props = {
   path: Path,
   capture?: boolean,
+  controlPaint: (context:CanvasRenderingContext2D ,props:{id:string,path:Path}) => mixed,
   capturePosition: Function,
   currentSize: Size,
   actualImageSize: Size,
@@ -103,14 +104,18 @@ export default class DragzoomPolygon extends React.Component<Props, State> {
     const context2D = this.context2D
     context2D.save()
     context2D.beginPath()
-    context2D.strokeStyle = 'rgba(0,0,0,1)'
-    context2D.lineWidth = 5
-    path.forEach((point, index) => {
-      const [x, y] = point
-      if(index ===0) context2D.moveTo(x,y)
-      else context2D.lineTo(x, y)
-      if(path.length === index+1) context2D.lineTo(path[0][0], path[0][1])
-    })
+    const { controlPaint } = this.props
+    const defaultPaint = !controlPaint || !controlPaint(context2D, {id: props.id, path})
+    if(defaultPaint){
+      context2D.strokeStyle = 'rgba(0,0,0,1)'
+      context2D.lineWidth = 5
+      path.forEach((point, index) => {
+        const [x, y] = point
+        if(index ===0) context2D.moveTo(x,y)
+        else context2D.lineTo(x, y)
+        if(path.length === index+1) context2D.lineTo(path[0][0], path[0][1])
+      })
+    }
     if(this.position && !props.capture) {
       const [x, y] = this.position
       if(context2D.isPointInPath(x, y)){
@@ -120,6 +125,7 @@ export default class DragzoomPolygon extends React.Component<Props, State> {
         this.props.onPolygonDragStart(props.id, props.path, this.event)
         this.event = void 0
         context2D.strokeStyle = 'rgba(255,255,255,0)'
+        context2D.fillStyle = 'rgba(255,255,255,0)'
       }
     }
     context2D.stroke()
