@@ -6,7 +6,7 @@
   "author": "lizhangrui",
   "license": "MIT",
   "scripts": {
-    "start": "webpack-dev-server --env.dev --inline --progress --colors",
+    "start": "",
     "test": "jest",
     "clean": "rm -rf dist",
     "build": " npm run build-es",
@@ -15,7 +15,6 @@
     "flow": "flow check || exit 0"
   },
   "dependencies": {
-    "lodash": "^4.17.4",
     "react-draggable": "^2.2.6"
   },
   "devDependencies": {
