@@ -1,3 +1,1 @@
-import DragZoom from './es'
-
-export default DragZoom
+module.exports = require('./es')
