@@ -305,8 +305,7 @@ export default class Dragzoom extends React.Component<Props, State> {
     if (positions.length > 0) {
       positions.map(id => {
         // 重新进行偏移，将偏移量加回
-        let { x: lastX, y: lastY, offset } = controlledPositions[id]
-        const { left = 0, top = 0 } = offset
+        let { x: lastX, y: lastY, offset: { top, left } } = controlledPositions[id]
         lastX += left
         lastY += top
         const scaleX = (lastX - lastPositin.x) / lastSize.width
@@ -471,7 +470,7 @@ export default class Dragzoom extends React.Component<Props, State> {
    * 进行缩放时，减去的偏移量需要重新加回后进行计算
    */
   shiftPoint = (point: Point): Point => {
-    const { offset = { left: 0, top: 0 } } = point
+    const { offset } = point
     const x = point.x - offset.left
     const y = point.y - offset.top
     return { ...point, x, y, offset }
@@ -531,7 +530,7 @@ export default class Dragzoom extends React.Component<Props, State> {
 
   getChildPosition = (id: string, childProps: Object) => {
     const { currentPosition, controlledPositions } = this
-    const { position, offset } = childProps
+    const { position, offset = { top: 0, left: 0} } = childProps
     if (!controlledPositions[id]) {
       controlledPositions[id] = this.calculatePosition({...position, offset})
       controlledPositions[id].id = id
