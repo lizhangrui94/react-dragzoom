@@ -14,24 +14,44 @@ export default class App extends React.Component{
     }, 3000)
   }
 
+  controlPaint = (context, { id, path}) => {
+    context.strokeStyle = '#000000'
+    context.fillStyle = '#ff0000'
+    context.lineWidth = 1
+    context.rect(path[0][0], path[0][1], path[3][0]-path[0][0], path[3][0]-path[0][0])
+    return 1
+  }
+
+  dragControlPaint = (context, { id, path}) => {
+    context.strokeStyle = '#000000'
+    context.fillStyle = '#ff000050'
+    context.lineWidth = 5
+    context.rect(path[0][0], path[0][1], path[3][0]-path[0][0], path[3][0]-path[0][0])
+    return 1
+  }
+
   render() {
     return (
       [
-        <Dragzoom key="1" img={this.state.img} polygonDragDisabled={false}>
-          <DragzoomPolygon capturePosition={console.log}>
+        <Dragzoom
+          key="1"
+          img={this.state.img}
+          polygonDragDisabled={false}
+          controlPaint={this.controlPaint}
+          dragControlPaint={this.dragControlPaint}
+        >
+          <DragzoomPolygon key="2" capturePosition={console.log} capture={false}>
             {new Array(1).fill(null).map((item, index) =>
-              <Polygon id={index+2} path={[[100,100],[100,300],[300,100],[300,300]]}/>
+              <Polygon key={index+2} id={index+2} path={[[100,100],[100,300],[300,100],[300,300]]}/>
             )}
             
-            <Polygon id='2' path={[[200,200],[200,400],[400,200],[400,400]]}/>
-            {/* <Polygon /> */}
-            {/* <Polygon /> */}
+            <Polygon id='1' path={[[200,200],[200,400],[400,200],[400,400]]}/>
           </DragzoomPolygon>
           <DragzoomItems>
-            <DragzoomItem key="1" position={{x:100, y:100}} offset={{top:10,left:10}} >
+            <DragzoomItem key="3" position={{x:100, y:100}} offset={{top:10,left:10}} >
               <span style={{background:'#000',display:'inline-block',width:'20px',height:'20px'}}></span>
             </DragzoomItem>
-            <DragzoomItem key="2" position={{x:200, y:200}} offset={{top:10,left:10}} >
+            <DragzoomItem key="4" position={{x:200, y:200}} offset={{top:10,left:10}} >
               <span style={{background:'#000',display:'inline-block',width:'20px',height:'20px'}}></span>
             </DragzoomItem>
           </DragzoomItems>

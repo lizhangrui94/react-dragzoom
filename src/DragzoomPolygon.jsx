@@ -108,7 +108,8 @@ export default class DragzoomPolygon extends React.Component<Props, State> {
     const defaultPaint = !controlPaint || !controlPaint(context2D, {id: props.id, path})
     if(defaultPaint){
       context2D.strokeStyle = 'rgba(0,0,0,1)'
-      context2D.lineWidth = 5
+      context2D.fillStyle = 'rgba(255,255,255,0)'
+      context2D.lineWidth = 1
       path.forEach((point, index) => {
         const [x, y] = point
         if(index ===0) context2D.moveTo(x,y)
@@ -128,6 +129,7 @@ export default class DragzoomPolygon extends React.Component<Props, State> {
         context2D.fillStyle = 'rgba(255,255,255,0)'
       }
     }
+    context2D.fill()
     context2D.stroke()
     context2D.closePath()
   }

@@ -22,6 +22,7 @@ type Props = {
   style: HTMLStyleElement,
   onSizeChange: Function,
   controlPaint: Function,
+  dragControlPaint: Function,
   onSingleDragStop?: Function,
   onDragStop: Function, //used with points
   onDrag: Function,
@@ -658,11 +659,12 @@ export default class Dragzoom extends React.Component<Props, State> {
     if (child.type.isDragCanvasPolygon) {
       const canvasProps = {
         containerSize: this.containerSize,
-        controlPaint: this.props.controlPaint,
+        controlPaint: this.props.dragControlPaint,
         currentPosition: this.state.childDragProps.position,
         calculateAllPosition: this.calculateAllPosition,
         ...this.currentPolygon,
         savePolygonPath: this.savePolygonPath,
+        
       }
       return <DragSinglePolygon {...canvasProps} />
     }
@@ -674,6 +676,7 @@ export default class Dragzoom extends React.Component<Props, State> {
     if (child.type.isDragCanvasPolygon) {
       const path = this.currentPolygonPath
       let canvasProps = {
+        controlPaint: this.props.controlPaint,
         currentSize: this.state.currentSize,
         actualImageSize: this.actualImageSize,
         containerSize: this.containerSize,

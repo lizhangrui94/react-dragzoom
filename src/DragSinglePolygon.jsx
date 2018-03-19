@@ -63,6 +63,7 @@ export default class DragSinglePolygon extends React.Component<Props, State> {
         if(path.length === index+1) context2D.lineTo(path[0][0], path[0][1])
       })
     }
+    context2D.fill()
     context2D.stroke()
     context2D.closePath()
   }
