@@ -22,11 +22,12 @@ type Props = {
   img: string,
   style: HTMLStyleElement,
   onSizeChange: Function,
-  controlPaint: (ctx: CanvasRenderingContext2D, path: Path) => boolean | 0 | 1, // 控制自定义图层的绘画
-  dragControlPaint: (ctx: CanvasRenderingContext2D, path: Path) => boolean | 0 | 1, // 控制拖动时自定义图层的绘画
   onSingleDragStop?: Function,
   onDragStop: Function, //used with points
   onDrag: Function,
+  onPolygonDragStop: Function,
+  controlPaint: (ctx: CanvasRenderingContext2D, path: Path) => boolean | 0 | 1, // 控制自定义图层的绘画
+  dragControlPaint: (ctx: CanvasRenderingContext2D, path: Path) => boolean | 0 | 1, // 控制拖动时自定义图层的绘画
   maxZoom: number,
   children: any,
   disabled?: boolean, //
@@ -60,8 +61,9 @@ export default class Dragzoom extends React.Component<Props, State> {
     polygonDragDisabled: true,
     onSizeChange: noop,
     // onSingleDragStop: noop,
-    onDragStop: noop,
     onDrag: noop,
+    onDragStop: noop,
+    onPolygonDragStop: noop,
   }
   canvasPolygon: any
   drag: HTMLElement | null
@@ -582,22 +584,7 @@ export default class Dragzoom extends React.Component<Props, State> {
       /****** 自定义图层操作函数开始 ******/
   /*******************************************/
 
-  /** 自定义图层拖拽 */
-  handleChildDrag = (e: Event, ui: Object) => {
-    if (this.actualImageSize.width <= 0) return
-    const { childDragProps } = this.state
-    const { x, y } = ui
-    childDragProps.position = { x, y }
-    this.setState({ childDragProps })
-  }
-
-  /** 自定义图层拖动停止 */
-  handleChildDragStop = (e: Event, ui: Object) => {
-    const path = this.getAllActualPosition(this.currentPolygonPath)
-    this.currentPolygon.path = path
-    this.onPolygonDragStop()
-  }
-
+  
   /** 自定义图层拖动开始 path为真实路径 */
   onPolygonDragStart = (id: string, path: Path, e: MouseEvent) => {
     const { childDragProps } = this.state
@@ -614,9 +601,26 @@ export default class Dragzoom extends React.Component<Props, State> {
     this.setState({ isPolygonDrag: true, childDragProps }, () => this.childDrag.dispatchEvent(event))
   }
 
+  /** 自定义图层拖拽 */
+  handleChildDrag = (e: Event, ui: Object) => {
+    if (this.actualImageSize.width <= 0) return
+    const { childDragProps } = this.state
+    const { x, y } = ui
+    childDragProps.position = { x, y }
+    this.setState({ childDragProps })
+  }
+
+  /** 自定义图层拖动停止 */
+  handleChildDragStop = (e: Event, ui: Object) => {
+    const path = this.getAllActualPosition(this.currentPolygonPath)
+    this.currentPolygon.path = path
+    this.onPolygonDragStop()
+  }
+
   /** 自定义图层拖动结束 path为真实路径 */
   onPolygonDragStop = () => {
     this.canvasPolygon.setShouldUpdate(true)
+    this.props.onPolygonDragStop(this.currentPolygon)
     this.setState({ isPolygonDrag: false }, () => this.currentPolygon = { id: '', path: []} )
     this.currentPolygonPath = []
   }
@@ -624,7 +628,6 @@ export default class Dragzoom extends React.Component<Props, State> {
   /** 转换成真实坐标 */
   getAllActualPosition = (position: Path) => {
     const { currentPosition: {x ,y} } = this
-    // let { position: { x:newX, y:newY } } = this.state.childDragProps
     const scale = this.state.scaleNum
     return position.map(([pointX, pointY]) => [(pointX-x)/scale, (pointY-y)/scale])
   }

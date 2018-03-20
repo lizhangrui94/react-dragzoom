@@ -115,7 +115,7 @@ export default class DragzoomPolygon extends React.Component<Props, State> {
         if(path.length === index+1) context2D.lineTo(path[0][0], path[0][1])
       })
     }
-    if(this.position && !props.capture) {
+    if(this.position && !props.capture && props.polygonDrag) {
       const [x, y] = this.position
       if(context2D.isPointInPath(x, y)){
         this.position = void 0
@@ -144,14 +144,14 @@ export default class DragzoomPolygon extends React.Component<Props, State> {
     const {id: currentId, path: currentPath} = this.currentPolygon
     context2D.clearRect(0, 0, containerSize.width, containerSize.height)
     React.Children.forEach(props.children, child => {
-      let { id, path } = child.props
+      let { id, path, polygonDrag } = child.props
       path = this.childPath[id] || path // 如果本地保存着path,则使用本地值
       if( currentId == id ) {
-        this.renderPolygon(props.calculateAllPosition(currentPath), this.currentPolygon)
+        this.renderPolygon(props.calculateAllPosition(currentPath), { ...this.currentPolygon, polygonDrag})
       }
       else {
         if (this.dragPolygon[id]) return  // 当前是否有处于拖动状态的图形
-        this.renderPolygon(props.calculateAllPosition(path), { capture, id, path })
+        this.renderPolygon(props.calculateAllPosition(path), { capture, id, path, polygonDrag })
       }
       
     })
