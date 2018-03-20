@@ -2,10 +2,8 @@
  * @flow
  */
 import React from 'react'
-import type { Size, Position } from './Dragzoom'
+import type { Size, Position, Path } from './Dragzoom'
 import { addEvent, removeEvent } from './utils'
-
-type Path = Array<[number, number]>
 
 type Props = {
   id: string,
@@ -13,7 +11,7 @@ type Props = {
   containerSize: Size,
   currentPosition: Position,
   controlPaint: (context:CanvasRenderingContext2D ,props:{id:string,path:Path}) => mixed,
-  calculateAllPosition: (Path, a?:{x:number, y:number}) => Path,
+  calculateAllPosition: (Path, position?: Position) => Path,
   onPolygonSelect: Function,
   savePolygonPath: Function,
 }
@@ -26,7 +24,7 @@ export default class DragSinglePolygon extends React.Component<Props, State> {
 
   canvas: HTMLCanvasElement
   context2D: CanvasRenderingContext2D
-  path: Array<[number, number]>
+  path: Path
   position: [number, number] | null = null
 
   componentDidMount() {

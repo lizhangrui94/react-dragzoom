@@ -2,7 +2,7 @@
  * @flow
  */
 import React from 'react'
-import type { Size, Position } from './Dragzoom'
+import type { Size, Position, Path } from './Dragzoom'
 import { addEvent, removeEvent } from './utils'
 
 const compareProps = ['containerSize', 'currentPosition', 'currentSize']
@@ -12,8 +12,6 @@ function isEqual(a, b): boolean {
   const newb = compareProps.map(key => b[key])
   return JSON.stringify(newa) === JSON.stringify(newb)
 }
-
-type Path = Array<[number, number]>
 
 type Props = {
   path: Path,
@@ -45,7 +43,7 @@ export default class DragzoomPolygon extends React.Component<Props, State> {
 
   canvas: HTMLCanvasElement
   context2D: CanvasRenderingContext2D
-  childPath: {[string]:Array<[number, number]>} = {} // 保存变化之后的位置
+  childPath: {[string]:Path} = {} // 保存变化之后的位置
   dragPolygon: Object = {} // 保存拖动状态的图形
   currentPolygon: Object = {}
   position: [number, number] | void
@@ -72,7 +70,7 @@ export default class DragzoomPolygon extends React.Component<Props, State> {
   }
 
   /** 拖动状态取消后会触发此函数 */
-  setPolygon = ({id, path}: { id:string, path: Array<[number, number]> }) => {
+  setPolygon = ({id, path}: { id:string, path: Path }) => {
     this.currentPolygon = {id, path}
     this.childPath[id] = path
     delete this.dragPolygon[id]

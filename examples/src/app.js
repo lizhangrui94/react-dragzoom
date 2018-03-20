@@ -45,7 +45,7 @@ export default class App extends React.Component{
               <Polygon key={index+2} id={index+2} path={[[100,100],[100,300],[300,100],[300,300]]}/>
             )}
             
-            <Polygon id='1' path={[[200,200],[200,400],[400,200],[400,400]]}/>
+            <Polygon id='1' polygonDrag path={[[200,200],[200,400],[400,200],[400,400]]}/>
           </DragzoomPolygon>
           <DragzoomItems>
             <DragzoomItem key="3" position={{x:100, y:100}} offset={{top:10,left:10}} >

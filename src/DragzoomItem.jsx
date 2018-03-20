@@ -4,6 +4,7 @@
 
 import React from 'react'
 import Draggable from 'react-draggable'
+import type { Position } from './Dragzoom'
 
 type Props = {
   position: Object,
