@@ -24,7 +24,6 @@ type Props = {
   img: string,
   style: HTMLStyleElement,
   onSizeChange: Function,
-  onSingleDragStop?: Function,
   onDragStop: Function, //used with points
   onDrag: Function,
   onPolygonDragStop: Function,
@@ -32,10 +31,9 @@ type Props = {
   dragControlPaint: (ctx: CanvasRenderingContext2D, path: Path) => boolean | 0 | 1, // 控制拖动时自定义图层的绘画
   maxZoom: number,
   children: any,
-  disabled?: boolean, //
   polygonDragDisabled: boolean,
-  scaleable?:boolean,
-  draggable?:boolean,
+  scaleable:boolean,
+  draggable:boolean,
 }
 
 type State = {
@@ -56,11 +54,9 @@ export default class Dragzoom extends React.Component<Props, State> {
   static defaultProps = {
     maxZoom: 2,
     scaleable: true,
-    disabled: false,
     draggable: true,
     polygonDragDisabled: true,
     onSizeChange: noop,
-    // onSingleDragStop: noop,
     onDrag: noop,
     onDragStop: noop,
     onPolygonDragStop: noop,
