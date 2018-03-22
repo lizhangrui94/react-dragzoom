@@ -6,8 +6,7 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import Draggable from 'react-draggable'
 import DragzoomCanvas from './DragzoomCanvas'
-import DragSinglePolygon from './DragSinglePolygon'
-import createFieldsStore from './createFieldsStore'
+import DragzoomSinglePolygon from './DragzoomSinglePolygon'
 import { getinlinePosition, addEvent, removeEvent } from './utils'
 
 function noop() {}
@@ -506,7 +505,7 @@ export default class Dragzoom extends React.Component<Props, State> {
         ...this.currentPolygon,
         savePolygonPath: this.savePolygonPath,
       }
-      return <DragSinglePolygon {...canvasProps} />
+      return <DragzoomSinglePolygon {...canvasProps} />
     }
   }
 

@@ -4,7 +4,6 @@
 
 import ReactDOM from 'react-dom'
 import _ from 'lodash'
-import dragScale from './dragScale'
 
 type ControlPosition = {x: number, y: number}
 type Bounds = {
@@ -18,7 +17,7 @@ export type DraggableData = {
 }
 
 // 从事件中得到{x,y}的位置   暂时只支持鼠标事件
-export function getControlPosition(e: MouseEvent, touchIdentifier: ?number, draggableCore: dragScale): ControlPosition {
+export function getControlPosition(e: MouseEvent, touchIdentifier: ?number, draggableCore): ControlPosition {
   // touch事件
   /* const touchObj = typeof touchIdentifier === 'number' ? getTouch(e, touchIdentifier) : null
   if (typeof touchIdentifier === 'number' && !touchObj) return null // not the right touch */
