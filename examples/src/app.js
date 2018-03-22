@@ -36,7 +36,7 @@ export default class App extends React.Component{
         <Dragzoom
           key="1"
           img={this.state.img}
-          polygonDragDisabled={false}
+          polygonDragDisabled={true}
           controlPaint={this.controlPaint}
           dragControlPaint={this.dragControlPaint}
         >
@@ -48,7 +48,7 @@ export default class App extends React.Component{
             <Polygon id='1' polygonDrag path={[[200,200],[200,400],[400,200],[400,400]]}/>
           </DragzoomPolygon>
           <DragzoomItems>
-            <DragzoomItem key="3" position={{x:100, y:100}} offset={{top:10,left:10}} >
+            <DragzoomItem key="3" disabled position={{x:100, y:100}} offset={{top:10,left:10}} >
               <span style={{background:'#000',display:'inline-block',width:'20px',height:'20px'}}></span>
             </DragzoomItem>
             <DragzoomItem key="4" position={{x:200, y:200}} offset={{top:10,left:10}} >
