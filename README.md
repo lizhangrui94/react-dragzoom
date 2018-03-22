@@ -46,5 +46,8 @@ a drag and scale component for react
 
 | props     | Description                              | Type       | Default |
 |-----------|------------------------------------------|------------|---------|
+| id | 点位id | boolean | false |
+| children| 子项 | React.Node | null |
+| disabled | 是否禁用拖动 | boolean | false |
 | capture | 是否捕获坐标 | boolean | false |
 | capturePosition | 捕获坐标函数 | (a:[number,number]) => mixed | (a:[number,number]) => null |
