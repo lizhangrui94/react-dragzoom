@@ -24,11 +24,11 @@ type Props = {
   img: string,
   style: HTMLStyleElement,
   onSizeChange: Function,
-  onDragStop: Function, //used with points
-  onDrag: Function,
+  onDragStop?: (position: Position) => mixed, //used with points
+  onDrag?: (position: Position) => mixed,
   onPolygonDragStop: Function,
-  controlPaint: (ctx: CanvasRenderingContext2D, path: Path) => boolean | 0 | 1, // 控制自定义图层的绘画
-  dragControlPaint: (ctx: CanvasRenderingContext2D, path: Path) => boolean | 0 | 1, // 控制拖动时自定义图层的绘画
+  controlPaint: (ctx: CanvasRenderingContext2D, props:{ id: string, path: Path}) => boolean | 0 | 1, // 控制自定义图层的绘画
+  dragControlPaint: (ctx: CanvasRenderingContext2D, props:{ id: string, path: Path}) => boolean | 0 | 1, // 控制拖动时自定义图层的绘画
   maxZoom: number,
   children: any,
   polygonDragDisabled: boolean,
@@ -57,8 +57,6 @@ export default class Dragzoom extends React.Component<Props, State> {
     draggable: true,
     polygonDragDisabled: true,
     onSizeChange: noop,
-    onDrag: noop,
-    onDragStop: noop,
     onPolygonDragStop: noop,
   }
   canvasPolygon: any
@@ -163,8 +161,6 @@ export default class Dragzoom extends React.Component<Props, State> {
   onContaninerResize = () => {
     const isupdate = this.initImage()
     if(isupdate) this.onSizeChange(this.initImageSize, this.initImageSize, this.initPosition)
-    // this.props.changePosition(position)
-    // this.props.onSizeChange(initSize, newSize, position)
   }
 
   /** 处理滚轮事件 */
@@ -381,6 +377,7 @@ export default class Dragzoom extends React.Component<Props, State> {
     const { x, y } = ui
     dragProps.position = { x, y }
     this.setState({ dragProps, currentPosition: { x, y } })
+    this.props.onDrag && this.props.onDrag({x, y})
   }
 
   /** 父容器拖拽停止 */
@@ -410,6 +407,7 @@ export default class Dragzoom extends React.Component<Props, State> {
     } else { top = (initHeight - currentSize.height) / 2 }
     dragProps.position = { x: left, y: top }
     this.setState({ dragProps, currentPosition: { x: left, y: top } })
+    this.props.onDragStop && this.props.onDragStop({x, y})
   }
 
   /*******************************************/

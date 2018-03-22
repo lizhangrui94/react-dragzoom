@@ -16,7 +16,7 @@ type Props = {
   currentSize: Size,
 
   pointsDisabled: boolean,
-  onDrag?: Function,
+  onDrag: Function,
   onDragStop: Function,
   getChildPosition: Function,
   getActualPosition: Function,
@@ -177,6 +177,10 @@ export default class DragzoomItems extends React.Component<Props, State> {
     const { controlledPositions } = this.state
     controlledPositions[id] = { ...controlledPositions[id], ...position }
     this.setState({ controlledPositions })
+    if(this.props.onDrag) {
+      const newPoint = this.getActualPosition(controlledPositions[id])
+      this.props.onDrag(newPoint)
+    }
   }
 
   /**

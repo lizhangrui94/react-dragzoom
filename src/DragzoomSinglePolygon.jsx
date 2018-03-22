@@ -12,7 +12,6 @@ type Props = {
   currentPosition: Position,
   controlPaint: (context:CanvasRenderingContext2D ,props:{id:string,path:Path}) => mixed,
   calculateAllPosition: (Path, position?: Position) => Path,
-  onPolygonSelect: Function,
   savePolygonPath: Function,
 }
 
