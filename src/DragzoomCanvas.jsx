@@ -35,12 +35,6 @@ export default class DragzoomCanvas extends React.Component<Props, State> {
     
   }
 
-  handleClick = (e: MouseEvent) => {
-    if(this.context2D.isPointInStroke) {
-      console.log(e)
-    }
-  }
-
   initCanvas = () => {
     const { containerSize } = this.props
     this.context2D = this.canvas.getContext("2d")
