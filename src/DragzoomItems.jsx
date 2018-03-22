@@ -55,7 +55,7 @@ export default class DragzoomItems extends React.Component<Props, State> {
   componentWillReceiveProps(nextProps: Props) {
     if( !isEuqal(this.props.currentSize, nextProps.currentSize)) {
       this.onParentSizeChange(this.props, nextProps)
-    } else if( isEuqal(this.props.currentPosition, nextProps.currentPosition) ) {
+    } else if( !isEuqal(this.props.currentPosition, nextProps.currentPosition) ) {
       this.onParentPositionChange(this.props, nextProps)
     }
   }
