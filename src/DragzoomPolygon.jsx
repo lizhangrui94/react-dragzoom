@@ -5,16 +5,26 @@ import React from 'react'
 import type { Size, Position, Path } from './Dragzoom'
 import { addEvent, removeEvent } from './utils'
 
-const compareProps = ['containerSize', 'currentPosition', 'currentSize']
+const compareParentProps = ['containerSize', 'currentPosition', 'currentSize']
+const compareProps = ['path', 'id']
 
-function isEqual(a, b): boolean {
-  const newa = compareProps.map(key => a[key])
-  const newb = compareProps.map(key => b[key])
+function isEqual(a = {}, b = {}, property = {}): boolean {
+  // $FlowFixMe
+  const newa = property.map(key => a[key])
+  // $FlowFixMe
+  const newb = property.map(key => b[key])
   return JSON.stringify(newa) === JSON.stringify(newb)
 }
 
+function isParentPropsEqual(a, b): boolean {
+  return isEqual(a, b, compareParentProps)
+}
+
+function isPropsEqual(a, b): boolean {
+  return isEqual(a, b, compareProps)
+}
+
 type Props = {
-  path: Path,
   capture?: boolean,
   controlPaint: (context:CanvasRenderingContext2D ,props:{id:string,path:Path}) => mixed,
   capturePosition: Function,
@@ -44,6 +54,7 @@ export default class DragzoomPolygon extends React.Component<Props, State> {
   canvas: HTMLCanvasElement
   context2D: CanvasRenderingContext2D
   childPath: {[string]:Path} = {} // 保存变化之后的位置
+  lastPropsPath: {[string]:Path} = {} // 保存变化之后的位置
   dragPolygon: Object = {} // 保存拖动状态的图形
   currentPolygon: Object = {}
   position: [number, number] | void
@@ -56,7 +67,7 @@ export default class DragzoomPolygon extends React.Component<Props, State> {
   }
 
   componentWillReceiveProps(nextProps: Props) {
-    if(this.update || !isEqual(this.props, nextProps)) { // TODO: 判断有误 会多次更新
+    if(this.update || !isParentPropsEqual(this.props, nextProps)) { // TODO: 判断有误 会多次更新
       this.updataCanvas(nextProps)
     }
   }
@@ -145,7 +156,12 @@ export default class DragzoomPolygon extends React.Component<Props, State> {
     context2D.clearRect(0, 0, containerSize.width, containerSize.height)
     React.Children.forEach(props.children, child => {
       let { id, path, polygonDrag } = child.props
-      path = this.childPath[id] || path // 如果本地保存着path,则使用本地值
+      if(!isPropsEqual(this.lastPropsPath[id], { path })) { // 如果props的值已经变化，则不进行本地值覆盖,去除本地值
+        this.lastPropsPath[id] = path
+        delete this.childPath[id]
+      } else {
+        path = this.childPath[id] || path // 如果本地保存着path,则使用本地值
+      }
       if( currentId == id ) {
         this.renderPolygon(props.calculateAllPosition(currentPath), { ...this.currentPolygon, polygonDrag})
       }
