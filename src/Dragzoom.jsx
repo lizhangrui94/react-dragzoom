@@ -72,7 +72,7 @@ export default class Dragzoom extends React.Component<Props, State> {
   lastScale: {mouseX: number, mouseY: number}  // 鼠标移动后在图片中的位置
   refreshScale: {mouseX: number, mouseY: number} // 缩放后在图片中的位置
   currentPolygonPath: Path = [] // 当前自定义图层路径，计算之后的虚拟路径
-  currentPolygon: { id: string, path: Path} = { id: '', path: [] }
+  currentPolygon: { id: string, path: Path} = { id: '', path: [] } // 当前自定义图层路径, 真实路径
   constructor(props: Props) {
     super(props)
     this.state = {
@@ -457,8 +457,9 @@ export default class Dragzoom extends React.Component<Props, State> {
   onPolygonDragStop = () => {
     // 这里的setState是同步的
     this.canvasPolygon.setShouldUpdate(true)
+    this.currentPolygon.path = this.props.onPolygonDragStop(this.currentPolygon) || this.currentPolygon.path
+    // 传入更新后的path
     this.setState({ isPolygonDrag: false })
-    this.props.onPolygonDragStop(this.currentPolygon)
     this.currentPolygon = { id: '', path: []}
     this.currentPolygonPath = []
   }
