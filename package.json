@@ -9,7 +9,8 @@
     "start": "",
     "test": "jest",
     "clean": "rm -rf dist",
-    "build": " npm run build-es",
+    "prepublish": "yarn run build",
+    "build": " yarn run build-es",
     "build-es": " rm -rf es && babel src --out-dir es --ignore test.js && lessc src/index.css > es/index.css ",
     "lint": "eslint \"src/**/*.@(js|jsx)\" -f",
     "flow": "flow check || exit 0"
