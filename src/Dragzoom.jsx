@@ -1,5 +1,6 @@
 /**
  * @flow
+ * 拖动变化的核心是拖动的参数，位置的变化全跟拖动参数有关
  */
 
 import React from 'react'
@@ -449,15 +450,14 @@ export default class Dragzoom extends React.Component<Props, State> {
   /** 自定义图层拖动停止 */
   handleChildDragStop = (e: Event, ui: Object) => {
     const path = this.getAllActualPosition(this.currentPolygonPath)
-    this.currentPolygon.path = path
-    this.onPolygonDragStop()
+    this.onPolygonDragStop({path, id: this.currentPolygon.id})
   }
 
   /** 自定义图层拖动结束 path为真实路径 */
-  onPolygonDragStop = () => {
+  onPolygonDragStop = ({id, path}: { id: string, path: Path}) => {
     // 这里的setState是同步的
     this.canvasPolygon.setShouldUpdate(true)
-    this.currentPolygon.path = this.props.onPolygonDragStop(this.currentPolygon) || this.currentPolygon.path
+    this.currentPolygon.path = this.props.onPolygonDragStop({id, path}) || path
     // 传入更新后的path
     this.setState({ isPolygonDrag: false })
     this.currentPolygon = { id: '', path: []}

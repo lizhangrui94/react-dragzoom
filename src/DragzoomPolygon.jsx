@@ -56,7 +56,6 @@ export default class DragzoomPolygon extends React.Component<Props, State> {
   childPath: {[string]:Path} = {} // 保存变化之后的位置
   lastPropsPath: {[string]:Path} = {} // 保存变化之后的位置
   dragPolygon: Object = {} // 保存拖动状态的图形
-  currentPolygon: Object = {} // 当前拖动的图形
   position: [number, number] | void
   event: MouseEvent | void
   update: boolean = true // 是否更新
@@ -82,7 +81,6 @@ export default class DragzoomPolygon extends React.Component<Props, State> {
 
   /** 拖动状态取消后会触发此函数 */
   setPolygon = ({id, path}: { id:string, path: Path }) => {
-    this.currentPolygon = {id, path}
     this.childPath[id] = path
     delete this.dragPolygon[id]
   }
@@ -152,19 +150,17 @@ export default class DragzoomPolygon extends React.Component<Props, State> {
       capture,
     } = props
     const context2D = this.context2D
-    const {id: currentId} = this.currentPolygon
     context2D.clearRect(0, 0, containerSize.width, containerSize.height)
     React.Children.forEach(props.children, child => {
       let { id, path, polygonDrag } = child.props
-      const propsEqual = isPropsEqual({path:this.lastPropsPath[id]}, { path })
-      if(!propsEqual) { // 如果props的值已经变化，则不进行本地值覆盖,去除本地值
-        this.lastPropsPath[id] = path
-        this.currentPolygon = { id, path }
-        delete this.childPath[id]
-      } else {
-        path = this.childPath[id] || path // 如果本地保存着path,则使用本地值
-      }
       if (this.dragPolygon[id]) return  // 当前是否有处于拖动状态的图形
+      const propsEqual = isPropsEqual({path:this.lastPropsPath[id]}, { path })
+      // 如果props的值已经变化，则赋值给childPath, 并存为上一次的值，也适用于初始化
+      if(!propsEqual) {
+        this.lastPropsPath[id] = path
+        this.childPath[id] = path
+      }
+      path = this.childPath[id] // 从childPath里取出对应的路径
       this.renderPolygon(props.calculateAllPosition(path), { capture, id, path, polygonDrag })
     })
     this.position = void 0

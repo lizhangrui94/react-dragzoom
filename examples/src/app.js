@@ -36,13 +36,13 @@ export default class App extends React.Component{
         <Dragzoom
           key="1"
           img={this.state.img}
-          polygonDragDisabled={true}
+          polygonDragDisabled={false}
           controlPaint={this.controlPaint}
           dragControlPaint={this.dragControlPaint}
         >
           <DragzoomPolygon key="2" capturePosition={console.log} capture={false}>
-            {new Array(1).fill(null).map((item, index) =>
-              <Polygon key={index+2} id={index+2} path={[[100,100],[100,300],[300,100],[300,300]]}/>
+            {new Array(3).fill(null).map((item, index) =>
+              <Polygon key={index+2} polygonDrag id={index+2} path={[[100,100],[100,300],[300,100],[300,300]]}/>
             )}
             
             <Polygon id='1' polygonDrag path={[[200,200],[200,400],[400,200],[400,400]]}/>
