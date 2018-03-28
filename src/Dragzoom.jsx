@@ -455,9 +455,11 @@ export default class Dragzoom extends React.Component<Props, State> {
 
   /** 自定义图层拖动结束 path为真实路径 */
   onPolygonDragStop = () => {
+    // 这里的setState是同步的
     this.canvasPolygon.setShouldUpdate(true)
+    this.setState({ isPolygonDrag: false })
     this.props.onPolygonDragStop(this.currentPolygon)
-    this.setState({ isPolygonDrag: false }, () => this.currentPolygon = { id: '', path: []} )
+    this.currentPolygon = { id: '', path: []}
     this.currentPolygonPath = []
   }
 

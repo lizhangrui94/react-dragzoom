@@ -16,11 +16,11 @@ function isEqual(a = {}, b = {}, property = {}): boolean {
   return JSON.stringify(newa) === JSON.stringify(newb)
 }
 
-function isParentPropsEqual(a, b): boolean {
+function isParentPropsEqual(a, b): boolean %checks {
   return isEqual(a, b, compareParentProps)
 }
 
-function isPropsEqual(a, b): boolean {
+function isPropsEqual(a, b): boolean %checks {
   return isEqual(a, b, compareProps)
 }
 
@@ -56,7 +56,7 @@ export default class DragzoomPolygon extends React.Component<Props, State> {
   childPath: {[string]:Path} = {} // 保存变化之后的位置
   lastPropsPath: {[string]:Path} = {} // 保存变化之后的位置
   dragPolygon: Object = {} // 保存拖动状态的图形
-  currentPolygon: Object = {}
+  currentPolygon: Object = {} // 当前拖动的图形
   position: [number, number] | void
   event: MouseEvent | void
   update: boolean = true // 是否更新
@@ -156,13 +156,15 @@ export default class DragzoomPolygon extends React.Component<Props, State> {
     context2D.clearRect(0, 0, containerSize.width, containerSize.height)
     React.Children.forEach(props.children, child => {
       let { id, path, polygonDrag } = child.props
-      if(!isPropsEqual(this.lastPropsPath[id], { path })) { // 如果props的值已经变化，则不进行本地值覆盖,去除本地值
+      const propsEqual = isPropsEqual({path:this.lastPropsPath[id]}, { path })
+      if(!propsEqual) { // 如果props的值已经变化，则不进行本地值覆盖,去除本地值
         this.lastPropsPath[id] = path
+        this.currentPolygon = { id, path }
         delete this.childPath[id]
       } else {
         path = this.childPath[id] || path // 如果本地保存着path,则使用本地值
       }
-      if( currentId == id ) {
+      if( currentId == id ) { // 当前图形处于拖动状态
         this.renderPolygon(props.calculateAllPosition(currentPath), { ...this.currentPolygon, polygonDrag})
       }
       else {
