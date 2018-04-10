@@ -67,6 +67,7 @@ export default class Dragzoom extends React.Component<Props, State> {
   containerSize: Size = { ...uninitialSize } // 父容器的大小
   actualImageSize: Size = { ...uninitialSize } //实际图片大小
   initImageSize: Size = { ...uninitialSize } // 初始化的大小
+  calculateNum: number = 1 // 实际缩放比例
   initPosition: Position = { x: 0, y: 0 } // 图片初始化的位置
   lastPosition: Position = { x: 0, y: 0 } // 图片上一次位置
   
@@ -269,6 +270,7 @@ export default class Dragzoom extends React.Component<Props, State> {
    * currentPosition 初始时为上一次图片的位置
    */
   onSizeChange = (initSize: Size, newSize: Size, position: Position) => {
+    this.calculateNum = newSize.width/this.actualImageSize.width
     this.setState({currentSize: newSize, lastSize: newSize, currentPosition: position})
     this.props.onSizeChange(newSize)
   }
@@ -339,6 +341,7 @@ export default class Dragzoom extends React.Component<Props, State> {
     }
     if (this.state.lastSize && this.state.lastSize.width !== 0) delete newState.lastSize
     this.setState(newState)
+    this.calculateNum = size.width/this.actualImageSize.width
     return true
   }
 
@@ -467,14 +470,14 @@ export default class Dragzoom extends React.Component<Props, State> {
   /** 转换成真实坐标 */
   getAllActualPosition = (position: Path) => {
     const { currentPosition: {x ,y} } = this.state
-    const scale = this.state.scaleNum
+    const scale = this.calculateNum
     return position.map(([pointX, pointY]) => [(pointX-x)/scale, (pointY-y)/scale])
   }
 
   /** 真实坐标转换成虚拟坐标 */
   calculateAllPosition = (position: Path, currentPosition: Position = this.state.currentPosition) => {
     const {x, y} = currentPosition
-    const scale = this.state.scaleNum
+    const scale = this.calculateNum
     return position.map(([pointX, pointY]) => [pointX*scale+x, pointY*scale+y])
   }
 
