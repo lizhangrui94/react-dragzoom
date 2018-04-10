@@ -100,10 +100,7 @@ export default class DragzoomPolygon extends React.Component<Props, State> {
   }
 
   initCanvas = () => {
-    const { containerSize } = this.props
     this.context2D = this.canvas.getContext("2d")
-    this.canvas.width = containerSize.width
-    this.canvas.height = containerSize.height
     this.updataCanvas(this.props)
   }
 
@@ -149,6 +146,8 @@ export default class DragzoomPolygon extends React.Component<Props, State> {
       currentPosition,
       capture,
     } = props
+    this.canvas.width = containerSize.width
+    this.canvas.height = containerSize.height
     const context2D = this.context2D
     context2D.clearRect(0, 0, containerSize.width, containerSize.height)
     React.Children.forEach(props.children, child => {

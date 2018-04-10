@@ -493,7 +493,7 @@ export default class Dragzoom extends React.Component<Props, State> {
   renderDragCanvasPolygon = (child: any) => {
     const { width, height } = this.state.currentSize
     if (width === 0 || height === 0) { return }
-    if (child.type.isDragCanvasPolygon) {
+    if (child && child.type && child.type.isDragCanvasPolygon) {
       const canvasProps = {
         containerSize: this.containerSize,
         controlPaint: this.props.dragControlPaint,
@@ -510,7 +510,7 @@ export default class Dragzoom extends React.Component<Props, State> {
   renderCanvasPolygon = (child: any) => {
     const { width, height } = this.state.currentSize
     if (width === 0 || height === 0) { return }
-    if (child.type.isDragCanvasPolygon) {
+    if (child && child.type && child.type.isDragCanvasPolygon) {
       let canvasProps = {
         controlPaint: this.props.controlPaint,
         currentSize: this.state.currentSize,
@@ -533,7 +533,7 @@ export default class Dragzoom extends React.Component<Props, State> {
   renderCommonItem = (child: any) => {
     const { width, height } = this.state.currentSize
     if (width === 0 || height === 0) { return }
-    if (child.type.isDragItems) {
+    if (child && child.type && child.type.isDragItems) {
       const props = {
         currentPosition: this.state.currentPosition,
         actualImageSize: this.actualImageSize,
