@@ -59,10 +59,13 @@ export default class DragzoomPolygon extends React.Component<Props, State> {
   position: [number, number] | void
   event: MouseEvent | void
   update: boolean = true // 是否更新
+  coreData: Object | null
 
   componentDidMount() {
     this.initCanvas()
     addEvent(this.canvas, 'mousedown', this.dragStart)
+    addEvent(this.canvas, 'mouseup', this.cancelMove)
+    
   }
 
   componentWillReceiveProps(nextProps: Props) {
@@ -73,6 +76,22 @@ export default class DragzoomPolygon extends React.Component<Props, State> {
   
   componentWillMount() {
     removeEvent(this.canvas, 'mousedown', this.dragStart)
+    removeEvent(this.canvas, 'mouseup', this.cancelMove)
+    removeEvent(this.canvas, 'mousemove', this.dragMoveStart)
+  }
+
+  createCoreData = (x: number, y: number) => {
+    if (!this.coreData) {
+      this.coreData = {
+        start: {x, y},
+      }
+    }
+    this.coreData = {
+      ...this.coreData,
+      current: {x, y},
+      deltaX: this.coreData.start.x - x,
+      deltaY: this.coreData.start.y - y,
+    }
   }
 
   setShouldUpdate = (bool: boolean) => {
@@ -91,7 +110,22 @@ export default class DragzoomPolygon extends React.Component<Props, State> {
     if(this.props.capture) {
       const position = this.props.getAllActualPosition([[e.offsetX, e.offsetY]])
       this.props.capturePosition(position[0])
+      addEvent(this.canvas, 'mousemove', this.dragMoveStart)
     }
+  }
+
+  dragMoveStart = (e: MouseEvent) => {
+    this.createCoreData(e.offsetX, e.offsetY)
+    if (this.coreData) {
+      const { start: { x: x1, y: y1 }, current: { x: x2, y: y2 } } = this.coreData
+      const position = this.props.getAllActualPosition([[x1, y1], [x2, y2]])
+      this.props.capturePosition(position)
+    }
+  }
+
+  cancelMove = () => {
+    this.coreData = null
+    removeEvent(this.canvas, 'mousemove', this.dragMoveStart)
   }
 
   redraw = (position: [number, number] | void) => {
