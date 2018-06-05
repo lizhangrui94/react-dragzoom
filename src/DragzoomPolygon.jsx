@@ -28,6 +28,7 @@ type Props = {
   capture?: boolean,
   controlPaint: (context:CanvasRenderingContext2D ,props:{id:string,path:Path}) => mixed,
   capturePosition: Function,
+  drawPolygon: Function,
   currentSize: Size,
   actualImageSize: Size,
   containerSize: Size,
@@ -48,7 +49,8 @@ export default class DragzoomPolygon extends React.Component<Props, State> {
   static Polygon = () => null
 
   static defaultProps = {
-    capturePosition: (a:[number,number]) => null
+    capturePosition: (a:[number,number]) => null,
+    drawPolygon: () => null
   }
 
   canvas: HTMLCanvasElement
@@ -59,7 +61,7 @@ export default class DragzoomPolygon extends React.Component<Props, State> {
   position: [number, number] | void
   event: MouseEvent | void
   update: boolean = true // 是否更新
-  coreData: Object | null
+  coreData: Object | void
 
   componentDidMount() {
     this.initCanvas()
@@ -104,6 +106,7 @@ export default class DragzoomPolygon extends React.Component<Props, State> {
     delete this.dragPolygon[id]
   }
 
+  /** 准备开始拖动出图形 */
   dragStart = (e: MouseEvent) => {
     this.event = e
     this.redraw([e.offsetX, e.offsetY])
@@ -114,17 +117,18 @@ export default class DragzoomPolygon extends React.Component<Props, State> {
     }
   }
 
+  /** 拖动鼠标变成图形 */
   dragMoveStart = (e: MouseEvent) => {
     this.createCoreData(e.offsetX, e.offsetY)
-    if (this.coreData) {
-      const { start: { x: x1, y: y1 }, current: { x: x2, y: y2 } } = this.coreData
-      const position = this.props.getAllActualPosition([[x1, y1], [x2, y2]])
-      this.props.capturePosition(position)
-    }
+    if(!this.coreData) return
+    const { start: { x: x1, y: y1 }, current: { x: x2, y: y2 } } = this.coreData
+    const position = this.props.getAllActualPosition([[x1, y1], [x2, y2]])
+    this.props.drawPolygon(position)
   }
 
+  /** 取消图形变化 */
   cancelMove = () => {
-    this.coreData = null
+    this.coreData = void 0
     removeEvent(this.canvas, 'mousemove', this.dragMoveStart)
   }
 
@@ -138,30 +142,33 @@ export default class DragzoomPolygon extends React.Component<Props, State> {
     this.updataCanvas(this.props)
   }
 
-  renderPolygon = (path: Path, props: { id: string, path: Path }) => {
+  renderPolygon = (path: Path, childProps: Object) => {
+    const { capture, id, polygonDrag, path: childPath } = childProps
     const context2D = this.context2D
     context2D.save()
     context2D.beginPath()
     const { controlPaint } = this.props
-    const defaultPaint = !controlPaint || !controlPaint(context2D, {id: props.id, path})
-    if(defaultPaint){
+    const defaultPaint = !controlPaint || !controlPaint(context2D, {id: id, path})
+    if(defaultPaint) {
       context2D.strokeStyle = 'rgba(0,0,0,1)'
       context2D.fillStyle = 'rgba(255,255,255,0)'
       context2D.lineWidth = 1
       path.forEach((point, index) => {
         const [x, y] = point
-        if(index ===0) context2D.moveTo(x,y)
+        if(index === 0) context2D.moveTo(x,y)
         else context2D.lineTo(x, y)
-        if(path.length === index+1) context2D.lineTo(path[0][0], path[0][1])
+        context2D.arc(x,y,5,0,2*Math.PI)
+        // if(path.length === index+1) context2D.lineTo(path[0][0], path[0][1])
       })
     }
-    if(this.position && !props.capture && props.polygonDrag) {
+    // 选择要拖动的图形
+    if(this.position && !capture && polygonDrag) {
       const [x, y] = this.position
       if(context2D.isPointInPath(x, y)){
         this.position = void 0
-        this.dragPolygon[props.id] = true
+        this.dragPolygon[id] = true
         // path 为真实路径
-        this.props.onPolygonDragStart(props.id, props.path, this.event)
+        this.props.onPolygonDragStart(id, childPath, this.event)
         this.event = void 0
         context2D.strokeStyle = 'rgba(255,255,255,0)'
         context2D.fillStyle = 'rgba(255,255,255,0)'
@@ -174,16 +181,16 @@ export default class DragzoomPolygon extends React.Component<Props, State> {
 
   updataCanvas = (props: Props) => {
     const {
-      containerSize,
+      containerSize: {width, height},
       currentSize,
       actualImageSize,
       currentPosition,
       capture,
     } = props
-    this.canvas.width = containerSize.width
-    this.canvas.height = containerSize.height
+    this.canvas.width = width
+    this.canvas.height = height
     const context2D = this.context2D
-    context2D.clearRect(0, 0, containerSize.width, containerSize.height)
+    context2D.clearRect(0, 0, width, height)
     React.Children.forEach(props.children, child => {
       let { id, path, polygonDrag } = child.props
       if (this.dragPolygon[id]) return  // 当前是否有处于拖动状态的图形

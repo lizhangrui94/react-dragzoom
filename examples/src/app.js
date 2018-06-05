@@ -3,6 +3,7 @@ import Dragzoom, { DragzoomPolygon, DragzoomItems, DragzoomItem } from 'react-dr
 
 const Polygon = DragzoomPolygon.Polygon
 export default class App extends React.Component{
+  startPosition = null
   state = {
     img: 'http://www.pconline.com.cn/pcedu/photo/0604/pic/060429cg03.jpg',
     polygonData: [],
@@ -10,19 +11,19 @@ export default class App extends React.Component{
 
   componentDidMount() {
     setTimeout(() => {
-      this.setState({x:150,y:150})
+      // this.setState({x:150,y:150})
       // this.setState({ img: 'https://i4.3conline.com/images/piclib/201211/21/batch/1/155069/1353489276201ambt3yjnlw_medium.jpg' })
       // this.setState({ img: 'http://www.pconline.com.cn/pcedu/photo/0604/pic/060429cg03.jpg'})
     }, 3000)
   }
 
   controlPaint = (context, { id, path}) => {
-    // if(id === '10') {
-    //   return
-    // }
+    if(id === '10') {
+      return
+    }
     context.strokeStyle = '#000000'
     context.fillStyle = '#ff0000'
-    context.lineWidth = 1
+    context.lineWidth = 5
     context.rect(path[0][0], path[0][1], path[3][0]-path[0][0], path[3][0]-path[0][0])
     return 1
   }
@@ -35,9 +36,16 @@ export default class App extends React.Component{
     return 1
   }
 
-  capturePosition = (positions) => {
-    // const [[x1, y1], [x2, y2]] = positions
-    // this.setState({polygonData: [[x1, y1], [x2, y2]]})
+  capturePosition = (position) => {
+    const [x1, y1] = position
+    const { polygonData } = this.state
+    this.setState({polygonData: [...polygonData, position]})
+    this.startPosition = position
+  }
+
+  drawPolygon = (positions) => {
+    const { polygonData } = this.state
+    this.setState({polygonData: [...polygonData, ...positions]})
   }
 
   render() {
@@ -50,14 +58,19 @@ export default class App extends React.Component{
           controlPaint={this.controlPaint}
           dragControlPaint={this.dragControlPaint}
         >
-          {/* <DragzoomPolygon key="2" capturePosition={this.capturePosition} capture={false}>
-            {new Array(10).fill(null).map((item, index) =>
+          <DragzoomPolygon
+            key="2"
+            capturePosition={this.capturePosition}
+            drawPolygon={this.drawPolygon}
+            capture={true}
+          >
+            {/* {new Array(10).fill(null).map((item, index) =>
               <Polygon key={index+2} polygonDrag id={index+2} path={[[100,100],[100,300],[300,100],[300,300]]}/>
             )}
             
             <Polygon id='1' polygonDrag path={[[200,200],[200,400],[400,200],[400,400]]}/> */}
-            {/* <Polygon id='10' polygonDrag path={this.state.polygonData} /> */}
-          {/* </DragzoomPolygon> */}
+            <Polygon id='10' polygonDrag path={this.state.polygonData} />
+          </DragzoomPolygon>
           <DragzoomItems>
             <DragzoomItem key={this.state.x || 10} disabled position={{x: this.state.x || 0, y: this.state.y || 0}} offset={{top:10,left:10}} >
               <span style={{background:'#000',display:'inline-block',width:'20px',height:'20px'}}></span>
