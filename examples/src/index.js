@@ -1,7 +1,8 @@
 // import DragScale from './lib/react-dragScale';
 import React from 'react'
 import ReactDOM from 'react-dom'
-import App from './app'
+import App1 from './app'
+import App2 from './app2'
 
 var points = []
 for(var i=0;i<1;i++){
@@ -9,6 +10,9 @@ for(var i=0;i<1;i++){
 }
 
 ReactDOM.render(
-  <App />,
+  [
+    <App1 key='1'/>,
+    <App2 key='2'/>
+  ],
   document.getElementById('root')
 )

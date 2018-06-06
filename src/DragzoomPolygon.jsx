@@ -24,11 +24,17 @@ function isPropsEqual(a, b): boolean %checks {
   return isEqual(a, b, compareProps)
 }
 
+function checkoutDbClick(fn: Function, time=100) {
+  return setTimeout(fn, time)
+}
+
 type Props = {
   capture?: boolean,
   controlPaint: (context:CanvasRenderingContext2D ,props:{id:string,path:Path}) => mixed,
   capturePosition: Function,
-  drawPolygon: Function,
+  startMove: Function,
+  stopMove: Function,
+  doubleClick: Function,
   currentSize: Size,
   actualImageSize: Size,
   containerSize: Size,
@@ -50,12 +56,19 @@ export default class DragzoomPolygon extends React.Component<Props, State> {
 
   static defaultProps = {
     capturePosition: (a:[number,number]) => null,
-    drawPolygon: () => null
+    startMove: () => null,
+    stopMove: () => null,
+    doubleClick: () => null,
   }
+
+  // mouse event
+  mdown: number = 0
+  mmove: number = 0
+  mup: number = 0
 
   canvas: HTMLCanvasElement
   context2D: CanvasRenderingContext2D
-  childPath: {[string]:Path} = {} // 保存变化之后的位置
+  childPath: {[string]:Path} = {} // child初始位置
   lastPropsPath: {[string]:Path} = {} // 保存变化之后的位置
   dragPolygon: Object = {} // 保存拖动状态的图形
   position: [number, number] | void
@@ -65,8 +78,9 @@ export default class DragzoomPolygon extends React.Component<Props, State> {
 
   componentDidMount() {
     this.initCanvas()
-    addEvent(this.canvas, 'mousedown', this.dragStart)
-    addEvent(this.canvas, 'mouseup', this.cancelMove)
+    addEvent(this.canvas, 'mousedown', this.mouseDown)
+    addEvent(this.canvas, 'mouseup', this.mouseUp)
+    addEvent(this.canvas, 'dblclick', this.doubleClick)
     
   }
 
@@ -76,10 +90,12 @@ export default class DragzoomPolygon extends React.Component<Props, State> {
     }
   }
   
-  componentWillMount() {
-    removeEvent(this.canvas, 'mousedown', this.dragStart)
-    removeEvent(this.canvas, 'mouseup', this.cancelMove)
-    removeEvent(this.canvas, 'mousemove', this.dragMoveStart)
+  componentWillUnmount() {
+    removeEvent(this.canvas, 'mousedown', this.mouseDown)
+    removeEvent(this.canvas, 'mouseup', this.mouseUp)
+    removeEvent(this.canvas, 'mousemove', this.mouseMove)
+    removeEvent(this.canvas, 'dblclick', this.doubleClick)
+    this.clearClick()
   }
 
   createCoreData = (x: number, y: number) => {
@@ -106,30 +122,58 @@ export default class DragzoomPolygon extends React.Component<Props, State> {
     delete this.dragPolygon[id]
   }
 
+  clearClick = () => {
+    // $FlowFixMe
+    ['mdown', 'mmove', 'mup'].forEach(key=> clearTimeout(this[key]))
+  }
+
+  doubleClick = (e: MouseEvent) => {
+    const position = this.props.getAllActualPosition([[e.offsetX, e.offsetY]])
+    this.clearClick()
+    this.props.doubleClick(position)
+  }
+
+  mouseDown = (e: MouseEvent) => {
+    this.dragReady(e)
+    // this.mdown = checkoutDbClick(() => this.dragReady(e))
+  }
+
+  mouseMove = (e: MouseEvent) => {
+    this.dragStart(e)
+    // this.mmove = checkoutDbClick(() => this.dragStart(e))
+  }
+
+  mouseUp = (e: MouseEvent) => {
+    this.dragDone(e)
+    // this.mup = checkoutDbClick(() => this.dragDone(e))
+  }
+
   /** 准备开始拖动出图形 */
-  dragStart = (e: MouseEvent) => {
+  dragReady = (e: MouseEvent) => {
     this.event = e
     this.redraw([e.offsetX, e.offsetY])
     if(this.props.capture) {
       const position = this.props.getAllActualPosition([[e.offsetX, e.offsetY]])
       this.props.capturePosition(position[0])
-      addEvent(this.canvas, 'mousemove', this.dragMoveStart)
+      addEvent(this.canvas, 'mousemove', this.mouseMove)
     }
   }
 
   /** 拖动鼠标变成图形 */
-  dragMoveStart = (e: MouseEvent) => {
+  dragStart = (e: MouseEvent) => {
     this.createCoreData(e.offsetX, e.offsetY)
     if(!this.coreData) return
     const { start: { x: x1, y: y1 }, current: { x: x2, y: y2 } } = this.coreData
     const position = this.props.getAllActualPosition([[x1, y1], [x2, y2]])
-    this.props.drawPolygon(position)
+    this.props.startMove(position)
   }
 
   /** 取消图形变化 */
-  cancelMove = () => {
+  dragDone = (e: MouseEvent) => {
     this.coreData = void 0
-    removeEvent(this.canvas, 'mousemove', this.dragMoveStart)
+    removeEvent(this.canvas, 'mousemove', this.mouseMove)
+    const position = this.props.getAllActualPosition([[e.offsetX, e.offsetY]])
+    this.props.stopMove(position[0])
   }
 
   redraw = (position: [number, number] | void) => {
@@ -152,7 +196,7 @@ export default class DragzoomPolygon extends React.Component<Props, State> {
     if(defaultPaint) {
       context2D.strokeStyle = 'rgba(0,0,0,1)'
       context2D.fillStyle = 'rgba(255,255,255,0)'
-      context2D.lineWidth = 1
+      context2D.lineWidth = 5
       path.forEach((point, index) => {
         const [x, y] = point
         if(index === 0) context2D.moveTo(x,y)
@@ -192,7 +236,8 @@ export default class DragzoomPolygon extends React.Component<Props, State> {
     const context2D = this.context2D
     context2D.clearRect(0, 0, width, height)
     React.Children.forEach(props.children, child => {
-      let { id, path, polygonDrag } = child.props
+      let { path, polygonDrag } = child.props
+      const id = child.key
       if (this.dragPolygon[id]) return  // 当前是否有处于拖动状态的图形
       const propsEqual = isPropsEqual({path:this.lastPropsPath[id]}, { path })
       // 如果props的值已经变化，则赋值给childPath, 并存为上一次的值，也适用于初始化
