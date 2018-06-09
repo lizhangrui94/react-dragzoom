@@ -75,10 +75,12 @@ export default class DragzoomPolygon extends React.Component<Props, State> {
   event: MouseEvent | void
   update: boolean = true // 是否更新
   coreData: Object | void
+  preProgress: boolean
 
   componentDidMount() {
     this.initCanvas()
     addEvent(this.canvas, 'mousedown', this.mouseDown)
+    addEvent(this.canvas, 'mousemove', this.mouseMove)
     addEvent(this.canvas, 'mouseup', this.mouseUp)
     addEvent(this.canvas, 'dblclick', this.doubleClick)
     
@@ -130,6 +132,8 @@ export default class DragzoomPolygon extends React.Component<Props, State> {
   doubleClick = (e: MouseEvent) => {
     const position = this.props.getAllActualPosition([[e.offsetX, e.offsetY]])
     this.clearClick()
+    removeEvent(this.canvas, 'mousemove', this.mouseMove)
+    this.preProgress = false
     this.props.doubleClick(position)
   }
 
@@ -155,7 +159,10 @@ export default class DragzoomPolygon extends React.Component<Props, State> {
     if(this.props.capture) {
       const position = this.props.getAllActualPosition([[e.offsetX, e.offsetY]])
       this.props.capturePosition(position[0])
-      addEvent(this.canvas, 'mousemove', this.mouseMove)
+      if (!this.preProgress) {
+        addEvent(this.canvas, 'mousemove', this.mouseMove)
+        this.preProgress = true
+      }
     }
   }
 
@@ -171,7 +178,7 @@ export default class DragzoomPolygon extends React.Component<Props, State> {
   /** 取消图形变化 */
   dragDone = (e: MouseEvent) => {
     this.coreData = void 0
-    removeEvent(this.canvas, 'mousemove', this.mouseMove)
+    // removeEvent(this.canvas, 'mousemove', this.mouseMove)
     const position = this.props.getAllActualPosition([[e.offsetX, e.offsetY]])
     this.props.stopMove(position[0])
   }
@@ -201,7 +208,7 @@ export default class DragzoomPolygon extends React.Component<Props, State> {
         const [x, y] = point
         if(index === 0) context2D.moveTo(x,y)
         else context2D.lineTo(x, y)
-        context2D.arc(x,y,5,0,2*Math.PI)
+        // context2D.arc(x,y,5,0,2*Math.PI)
         // if(path.length === index+1) context2D.lineTo(path[0][0], path[0][1])
       })
     }
@@ -221,6 +228,17 @@ export default class DragzoomPolygon extends React.Component<Props, State> {
     context2D.fill()
     context2D.stroke()
     context2D.closePath()
+    path.forEach((point, index) => {
+      const [x, y] = point
+      context2D.beginPath()
+      context2D.lineWidth=3    //重新设置画笔  
+      context2D.strokeStyle="green"
+      context2D.fillStyle="rgb(255,255,255)"   //设置填充的颜色  
+      context2D.arc(x,y,3,0,2*Math.PI)
+      context2D.stroke()
+      context2D.fill()
+      context2D.closePath()
+    })
   }
 
   updataCanvas = (props: Props) => {

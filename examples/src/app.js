@@ -73,7 +73,6 @@ export default class App extends React.Component{
 
   render() {
     const { polygonList, currentPolygon } = this.state
-    console.log(currentPolygon)
     return (
       [
         <Dragzoom
